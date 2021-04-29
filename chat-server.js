@@ -1258,7 +1258,7 @@ wsServer.on('request', function (request) {
 	}
 	// chatRequest(request);
 });
-
+ 
 
 mongoose.connect(config.dbUrl, {
 	useNewUrlParser: true,
