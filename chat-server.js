@@ -101,11 +101,16 @@ colors.sort(function (a, b) {
  * HTTP server
  */
 var server = http.createServer(function (request, response) {
-	// Not important for us. We're writing WebSocket server, not HTTP server
+	// set response header
+	response.writeHead(200, { 'Content-Type': 'text/html' });
+
+	// set response content    
+	response.write('<html><body><p>This is home Page.</p></body></html>');
+	response.end();
 });
-server.listen(process.env.PORT || config.webSocketsServerPort, function () {
+server.listen(config.webSocketsServerPort, function () {
 	// console.log((new Date()) + " Server is listening on port " + config.webSocketsServerPort);
-	console.log("Express server listening on port::: ", process.env.PORT);
+	console.log("Express server listening on port::: ", config.webSocketsServerPort);
 
 });
 

@@ -15,7 +15,7 @@ config.serverKey = 'AAAAvvRfWBg:APA91bFUq2aKcEeodJab7UjMLUVXLgMXgJC26g0yReAOpzia
 config.dbUrl = 'mongodb+srv://ReactChat:zLv9moWZL0kzPG32@sample.b9ow3.mongodb.net/myFirstDatabase?retryWrites=true&w=majority';//  ReactChat
 
 // Port where we'll run the websocket server
-config.webSocketsServerPort = 1337;
+config.webSocketsServerPort = process.env.PORT || 1337;
 
 
 module.exports = config;
