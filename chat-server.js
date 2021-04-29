@@ -103,8 +103,10 @@ colors.sort(function (a, b) {
 var server = http.createServer(function (request, response) {
 	// Not important for us. We're writing WebSocket server, not HTTP server
 });
-server.listen(config.webSocketsServerPort, function () {
-	console.log((new Date()) + " Server is listening on port " + config.webSocketsServerPort);
+server.listen(process.env.PORT || config.webSocketsServerPort, function () {
+	// console.log((new Date()) + " Server is listening on port " + config.webSocketsServerPort);
+	console.log("Express server listening on port::: ", process.env.PORT);
+
 });
 
 /**
@@ -186,9 +188,9 @@ function getLastMessage(message, type) {
 
 function updateOnlineStatus(userId, online) {
 	///Create new object to update online and lst seen status
-	let dataToUpdate = {last_seen: new Date(), is_online: online};
+	let dataToUpdate = { last_seen: new Date(), is_online: online };
 
-	UsersModel.findOneAndUpdate({userId: userId}, dataToUpdate, {
+	UsersModel.findOneAndUpdate({ userId: userId }, dataToUpdate, {
 		new: false,
 		useFindAndModify: false
 	}, (err, updated_user) => {
@@ -206,7 +208,7 @@ function updateOnlineStatus(userId, online) {
 }
 
 function createNewRoomNotify(savedMessage) {
-	let fondData = {userId: {$in: savedMessage.userList}};
+	let fondData = { userId: { $in: savedMessage.userList } };
 	// { "userName": requestData.userName, "password": requestData.password };
 	UsersModel.find(fondData, (err, userList) => {
 
@@ -227,7 +229,7 @@ function createNewRoomNotify(savedMessage) {
 			return x;
 		})
 
-		let responseData = {newRoom: savedMessage, userList: userList};
+		let responseData = { newRoom: savedMessage, userList: userList };
 		// console.log(`Room Saved.`, savedMessage.userList);
 		savedMessage.userList.forEach(element => {
 			// console.log(`Room Saved.`, element, cons[element]);
@@ -270,7 +272,7 @@ async function roomRequest(requestData, connection) {
 		}
 		let roomId = requestData.roomId;
 
-		RoomModel.find({_id: mongoose.Types.ObjectId(roomId)}).exec((err, messages) => {
+		RoomModel.find({ _id: mongoose.Types.ObjectId(roomId) }).exec((err, messages) => {
 			//res.send(messages);
 			// console.log(`On connect Error:::${err} data:::`, messages);
 			// connection.sendUTF(`user login successfully ${messages}`);
@@ -284,7 +286,7 @@ async function roomRequest(requestData, connection) {
 
 				usersList = [...new Set(usersList)];
 
-				let fondData = {userId: {$in: usersList}};
+				let fondData = { userId: { $in: usersList } };
 				// { "userName": requestData.userName, "password": requestData.password };
 				UsersModel.find(fondData, (err, userList) => {
 
@@ -305,7 +307,7 @@ async function roomRequest(requestData, connection) {
 						return x;
 					})
 
-					let responseData = {roomList: messages, userList: userList};
+					let responseData = { roomList: messages, userList: userList };
 					// console.log(`responseData::: `, responseData);
 					connection.sendUTF(responseSuccess(200, "roomsDetails", responseData, "Data Found", true));
 					// userList
@@ -334,7 +336,7 @@ async function roomRequest(requestData, connection) {
 			});
 
 			console.log(findObject);
-			RoomModel.find(findObject).sort({last_message_time: -1}).exec((err, messages) => {
+			RoomModel.find(findObject).sort({ last_message_time: -1 }).exec((err, messages) => {
 				//res.send(messages);
 				// console.log(`On connect Error:::${err} data:::`, messages);
 				// connection.sendUTF(`user login successfully ${messages}`);
@@ -348,7 +350,7 @@ async function roomRequest(requestData, connection) {
 
 					usersList = [...new Set(usersList)];
 
-					let fondData = {userId: {$in: usersList}};
+					let fondData = { userId: { $in: usersList } };
 					// { "userName": requestData.userName, "password": requestData.password };
 					UsersModel.find(fondData, (err, userList) => {
 						// console.log("userList", userList);
@@ -372,7 +374,7 @@ async function roomRequest(requestData, connection) {
 								return x;
 							})
 
-							let responseData = {roomList: messages, userList: userList};
+							let responseData = { roomList: messages, userList: userList };
 							// console.log(`responseData::: `, responseData);
 							connection.sendUTF(responseSuccess(200, "allRooms", responseData, "Data Found", true));
 							// userList
@@ -422,7 +424,7 @@ async function roomRequest(requestData, connection) {
 
 			if (userList.length == 2) {
 
-				let group = await RoomModel.find({userList: {$all: userList, $size: userList.length}});
+				let group = await RoomModel.find({ userList: { $all: userList, $size: userList.length } });
 				// let group = await RoomModel.find({ 'users.anil' : true,  'users.shubhum' : true , userList: {$size : 2}});
 				// let group = await RoomModel.find({ 'users.anil' : true,  'users.shubhum' : true });
 				if (group.length) {
@@ -453,7 +455,7 @@ async function roomRequest(requestData, connection) {
 		});
 
 
-		let group = await RoomModel.find({userList: {$all: userList, $size: userList.length}});
+		let group = await RoomModel.find({ userList: { $all: userList, $size: userList.length } });
 		// let group = await RoomModel.find({ 'users.anil' : true,  'users.shubhum' : true , userList: {$size : 2}});
 		// let group = await RoomModel.find({ 'users.anil' : true,  'users.shubhum' : true });
 		if (group.length) {
@@ -476,7 +478,7 @@ async function roomRequest(requestData, connection) {
 				dataToUpdate[`unread.${requestData.unread}`] = 0;
 			}
 
-			RoomModel.findOneAndUpdate({_id: mongoose.Types.ObjectId(roomId)}, dataToUpdate, {
+			RoomModel.findOneAndUpdate({ _id: mongoose.Types.ObjectId(roomId) }, dataToUpdate, {
 				new: false,
 				useFindAndModify: false
 			}, (err, updatedRoom) => {
@@ -665,7 +667,7 @@ async function loginRequest(requestData, connection) {
 
 		} else {
 
-			UsersModel.find({userId: requestData.userId, userName: requestData.userName}).then((userData) => {
+			UsersModel.find({ userId: requestData.userId, userName: requestData.userName }).then((userData) => {
 				console.log('userData', userData);
 				if (userData.length) {
 					return connection.sendUTF(responseError(400, "register", "User is already exist.", true));
@@ -740,7 +742,7 @@ async function loginRequest(requestData, connection) {
 
 			UsersModel.findOneAndUpdate({ /* _id: requestData._id,  */
 				userId: requestData.userId
-			}, dataToUpdate, {new: false, useFindAndModify: false}, (err, updated_user) => {
+			}, dataToUpdate, { new: false, useFindAndModify: false }, (err, updated_user) => {
 				if (err) {
 					connection.sendUTF(responseError(500, "updateProfile", "Internal Server Error.", true));
 				}
@@ -752,7 +754,7 @@ async function loginRequest(requestData, connection) {
 				connection.sendUTF(responseSuccess(200, "updateProfile", updated_user, "Data updated successfully.", true));
 
 
-				UsersModel.find({_id: mongoose.Types.ObjectId(updated_user._id)}, (err, findUser) => {
+				UsersModel.find({ _id: mongoose.Types.ObjectId(updated_user._id) }, (err, findUser) => {
 
 					if (findUser && findUser.length > 0) {
 						/// Notify to all active user about that user profile
@@ -774,7 +776,7 @@ function formatTheMessages(message) {
 	message = JSON.parse(JSON.stringify(message));
 	// message["timestamp"] = new Date(message.time).getTime();
 
-	message = Object.assign({}, message, {"timestamp": new Date(message.time).getTime()});
+	message = Object.assign({}, message, { "timestamp": new Date(message.time).getTime() });
 	// console.log("Message::::", message);
 	return message;
 
@@ -886,7 +888,7 @@ async function messageRequest(requestData, connection) {
 									unread[userId] = newUnreadMessage;
 								}
 							});
-							newMessageInfo = {unread: unread}
+							newMessageInfo = { unread: unread }
 
 						} else {
 							let unreadObject = room.users;
@@ -903,7 +905,7 @@ async function messageRequest(requestData, connection) {
 
 							});
 
-							newMessageInfo = {unread: unread}
+							newMessageInfo = { unread: unread }
 						}
 
 						newMessageInfo["last_message"] = getLastMessage(messageData.message, messageData.message_type);
@@ -919,7 +921,7 @@ async function messageRequest(requestData, connection) {
 			message_info: Object,
 			users_meta: Object,
 			userList: Array */
-						RoomModel.findOneAndUpdate({_id: mongoose.Types.ObjectId(room._id)}, newMessageInfo, {
+						RoomModel.findOneAndUpdate({ _id: mongoose.Types.ObjectId(room._id) }, newMessageInfo, {
 							new: true,
 							useFindAndModify: false
 						}, (err, updatedRoom) => {
@@ -957,7 +959,7 @@ async function messageRequest(requestData, connection) {
 						// });
 
 
-						let fondData = {userId: {$in: room.userList}};
+						let fondData = { userId: { $in: room.userList } };
 						// { "userName": requestData.userName, "password": requestData.password };
 						UsersModel.find(fondData, (err, userList) => {
 
@@ -1044,7 +1046,7 @@ async function messageRequest(requestData, connection) {
 				isFine(requestData.message_content) && (dataToUpdate["message_content"] = requestData.message_content);
 				isFine(requestData.message) && (dataToUpdate["message"] = requestData.message);
 
-				MessageModel.findOneAndUpdate({_id: mongoose.Types.ObjectId(requestData.messageId)}, dataToUpdate, {
+				MessageModel.findOneAndUpdate({ _id: mongoose.Types.ObjectId(requestData.messageId) }, dataToUpdate, {
 					new: false,
 					useFindAndModify: false
 				}, (err, data) => {
@@ -1125,7 +1127,7 @@ async function blockUser(requestData, connection) {
 			BlockModel.updateOne({
 				"blockedBy": requestData.blockedBy,
 				"blockedTo": requestData.blockedTo
-			}, dataToUpdate, {upsert: true}, (err, data) => {
+			}, dataToUpdate, { upsert: true }, (err, data) => {
 				console.warn(err, data);
 				if (data) {
 
@@ -1258,7 +1260,7 @@ wsServer.on('request', function (request) {
 	}
 	// chatRequest(request);
 });
- 
+
 
 mongoose.connect(config.dbUrl, {
 	useNewUrlParser: true,
