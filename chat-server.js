@@ -217,21 +217,31 @@ class SSChatReact {
 	}
 
 	addConnectionToList = (connection, userId) => {
-		connection['uId'] = userId;
-		connection['connectionID'] = Date.now();
+		console.log({ "message": "addConnectionToList", userId, remoteAddresses: connection.remoteAddress });
+		connection['uId'] = `${userId}`;
+		// connection['connectionID'] = Date.now();
 		if (!allConnections[userId] || allConnections[userId] == undefined) {
 			allConnections[userId] = [connection];
 		} else {
-			allConnections[userId].push(connection);
+			let alreadyHas = allConnections[userId].some((element) => {
+				return element.remoteAddress == connection.remoteAddress
+			});
+			if (alreadyHas) {
+				console.log(`connection is already available `); //${connection.remoteAddress}
+			} else {
+				console.log(`new connection `); //${connection.remoteAddress}
+				allConnections[userId].push(connection);
+			}
+
 		}
 	}
 
 	removeConnectionFromList = (connection) => {
 		let userId = connection.uId;
-		let connectionID = connection.connectionID;
+		let remoteAddress = connection.remoteAddress;
 		if (!(!allConnections[userId] || allConnections[userId] == undefined)) {
 			let filteredConnections = allConnections[userId].filter((element) => {
-				return element.connectionID != connectionID;
+				return element.remoteAddress != remoteAddress;
 			});
 			allConnections[userId] = filteredConnections;
 		}
@@ -271,7 +281,7 @@ class SSChatReact {
 			useFindAndModify: false
 		}, (err, updated_user) => {
 			if (updated_user) {
-				console.log("On Update Online Status:: ", err, updated_user);
+				// console.log("On Update Online Status:: ", err, updated_user);
 
 				updated_user["is_online"] = online;
 
@@ -588,7 +598,7 @@ class SSChatReact {
 					new: false,
 					useFindAndModify: false
 				}, (err, updatedRoom) => {
-					console.log("updatedRoom:::", updatedRoom);
+					// console.log("updatedRoom:::", updatedRoom);
 
 
 					if (err) {
@@ -647,7 +657,7 @@ class SSChatReact {
 
 					} else {
 
-						let userId = userData['_id'];
+						let userId = userData['userId'];
 
 						this.addConnectionToList(connection, userId);
 
@@ -898,7 +908,7 @@ class SSChatReact {
 
 				MessageModel.find(findObject, (err, messages) => {
 					//res.send(messages);
-					console.log(`On connect Error:::${err} data:::`, messages);
+					// console.log(`allMessage Error:::${err} data:::`, messages);
 
 					if (messages && messages.length > 0) {
 						console.log(`All Message Found....`);
