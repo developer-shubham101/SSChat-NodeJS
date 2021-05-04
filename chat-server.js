@@ -250,6 +250,8 @@ class SSChatReact {
 	}
 
 	removeConnectionFromList = (connection) => {
+
+		delete allConnections[userId];
 		// let userId = connection.uId;
 		// let connectionID = connection.connectionID;
 		// if (!(!allConnections[userId] || allConnections[userId] == undefined)) {
