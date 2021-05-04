@@ -207,7 +207,7 @@ class SSChatReact {
 		});
 	}
 
-	sendMessageToUser = (user, message) => {
+	/* sendMessageToUser = (user, message) => {
 		if (allConnections[user]) {
 			console.log(`Connection:: ${user} ${allConnections[user].length}`);
 			allConnections[user].forEach((connection) => {
@@ -235,6 +235,29 @@ class SSChatReact {
 			});
 			allConnections[userId] = filteredConnections;
 		}
+	} */
+
+	sendMessageToUser = (user, message) => {
+		if (allConnections[user]) {
+			allConnections[user].sendUTF(message);
+		}
+	}
+
+	addConnectionToList = (connection, userId) => {
+		connection['uId'] = userId;
+		connection['connectionID'] = Date.now();
+		allConnections[userId] = connection;
+	}
+
+	removeConnectionFromList = (connection) => {
+		// let userId = connection.uId;
+		// let connectionID = connection.connectionID;
+		// if (!(!allConnections[userId] || allConnections[userId] == undefined)) {
+		// 	let filteredConnections = allConnections[userId].filter((element) => {
+		// 		return element.connectionID != connectionID;
+		// 	});
+		// 	allConnections[userId] = filteredConnections;
+		// }
 	}
 
 	updateOnlineStatus = (userId, online) => {
