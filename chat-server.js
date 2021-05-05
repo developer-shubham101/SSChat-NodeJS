@@ -190,6 +190,14 @@ class SSChatReact {
 				return "📞";
 			case "VIDEO":
 				return "🎞️";
+			case "IMAGE_CANDY":
+				return "Candy Image";
+			case "VIDEO_CANDY":
+				return "Candy Video";
+			case "IMAGE_PACK_CANDY":
+				return "Candy Pack";
+			case "VIDEO_PACK_CANDY":
+				return "Candy Pack";
 			case "REPlAY":
 				return "Replay";
 			default:
