@@ -1,0 +1,35 @@
+// loginOrCreate
+{
+    "userId": "1",
+    "userName": "anil@yopmail.com",
+    "firstName": "Anil",
+    "password": "123456",
+    "fcm_token": "dOJjym9uQ3SHWs9lkQSGNJ:APA91bFrd6jIkeXd5UAi3J60X1pfD78RtXZO0Q1Z9eVcy0LNSgX--DW5umyVOqfWr14BbFCwNv9ILggzfxk1cbjp504L1fhFu_Qgb2T9PIpbeNWdlTiBTLkpqBdkHZ0ubPwXyZ9gx-b_",
+    "type": "loginOrCreate",
+    "request": "login"
+}
+
+{
+    "userId": "2",
+    "userName": "amit@yopmail.com",
+    "firstName": "Amit",
+    "password": "123456",
+    "fcm_token": "dOJjym9uQ3SHWs9lkQSGNJ:APA91bFrd6jIkeXd5UAi3J60X1pfD78RtXZO0Q1Z9eVcy0LNSgX--DW5umyVOqfWr14BbFCwNv9ILggzfxk1cbjp504L1fhFu_Qgb2T9PIpbeNWdlTiBTLkpqBdkHZ0ubPwXyZ9gx-b_",
+    "type": "loginOrCreate",
+    "request": "login"
+}
+{
+    "type": "allUsers",
+    "request": "users"
+}
+
+
+{
+    "userList": [
+        "2",
+        "1"
+    ],
+    "createBy": "1",
+    "type": "createRoom",
+    "request": "room"
+}

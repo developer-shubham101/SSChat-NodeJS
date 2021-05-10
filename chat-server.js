@@ -1135,7 +1135,7 @@ class SSChatReact {
 		}*/
 
 				let rules = {
-					room: 'required|string',
+					//room: 'required|string',
 					messageId: 'required|string',
 					// message: 'string',
 					// message_content: 'object'
@@ -1152,15 +1152,24 @@ class SSChatReact {
 
 					this.isFine(requestData.message_content) && (dataToUpdate["message_content"] = requestData.message_content);
 					this.isFine(requestData.message) && (dataToUpdate["message"] = requestData.message);
+					this.isFine(requestData.isDelete) && (dataToUpdate["message_type"] = "DELETE");
 
 					MessageModel.findOneAndUpdate({ _id: mongoose.Types.ObjectId(requestData.messageId) }, dataToUpdate, {
-						new: false,
+						new: true,
 						useFindAndModify: false
 					}, (err, data) => {
 						console.warn("updateMessage", err, data);
-						if (data) {
-							//TODO:- Send message to users
-							// this.sendMessageToUser(this.responseSuccess(200, "updateMessage", data, "Modified", true))
+						if (data.roomId) {
+							RoomModel.find({ _id: mongoose.Types.ObjectId(data.roomId) }).exec((err, roomData) => {
+								// console.log("updateMessage", err, roomData);
+								if (roomData.length > 0) {
+									roomData[0].userList.forEach((userId) => {
+										// console.log("Sending Message To", userId, data);
+										this.sendMessageToUser(userId, this.responseSuccess(200, "updateMessage", this.formatTheMessages(data), "Modified", true))
+									});
+								}
+							});
+
 						}
 					});
 				}

@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+      .align-right{
+        text-align: right;
+      }
+
+      #chat_window .card-content{
+        height: 67vh;
+        overflow: auto;
+
+      }
+      .sender_name{
+        color:#6f6f6f
+      }
+      body{
+        background-color:#f3f3f9;
+      }
+    </style>
+    <meta charset = "utf-8" />
+    
+       <!-- <link rel='stylesheet' href='/stylesheets/style.css' /> -->
+    
+    <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous"> -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+    
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW" crossorigin="anonymous"></script> -->
+
+  <!-- Compiled and minified CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+
+  <!-- Compiled and minified JavaScript -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+        <title>WebSockets - Simple chat</title>
+
+        <style>
+        * { font-family:tahoma; font-size:12px; padding:0px; margin:0px; }
+        p { line-height:18px; }
+        /* div { width:500px; margin-left:auto; margin-right:auto;} */
+        #content { padding:5px; background:#ddd; border-radius:5px; overflow-y: scroll;
+                   border:1px solid #CCC; margin-top:10px; height: 160px; }
+        #input { border-radius:2px; border:1px solid #ccc;
+                 margin-top:10px; padding:5px; width:400px;  }
+        #status { width:88px; display:block; float:left; margin-top:15px; }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+
+        <div class="row">
+
+          <div class="col s12">
+            <button class="btn" id="profile_btn">Profile</button>
+            <button class="btn" id="create_room_btn">Create Room</button>
+            <button class="btn" id="all_room_btn">All Rooms</button>
+            <button class="btn" id="new_message_btn">New Message</button>
+          </div>
+
+          <div class="col s12">
+            <br>
+            <div class="divider"></div>
+            <br>
+          </div>
+          <div class="col s12">
+            <button class="btn" id="login_btn">Login AbcUser</button>
+            <button class="btn" id="register_btn">Register AbcUser</button>
+            
+          </div>
+          
+          <div class="col s12">
+            <br>
+            <div class="divider"></div>
+            <br>
+          </div>
+          
+          
+          <div class="col s12">
+            <button class="btn red" id="login_anil_btn">Login Anil</button>
+            <button class="btn" id="register_as_anil_btn">Register As Anil</button>
+            
+            
+          </div>
+          
+          <div class="col s12">
+            <br>
+            <div class="divider"></div>
+            <br>
+          </div>
+          
+          <div class="col s12">
+            <button class="btn pink" id="login_or_create_btn">Login Or Create as Rajan</button>
+
+          </div>
+          <!--<div class="col s12">
+            <div class="card">
+              <div class="card-content" id="console_show"></div>
+            </div>
+          </div>-->
+        </div>
+
+      <div class="row" id="loginArea">
+        <div class="col s12 card">
+          <div class="card-content">
+      
+                <form class="row" id = "login_form">
+                    
+                    <div class="input-field col s6">
+                    <input id="username" name="userName" type="text" class="">
+                    <label for="username">Username</label>
+                    </div>
+                    <input type="hidden" name="type" value="login">
+                    <div class="input-field col s6">
+                    <input id="password" name="password" type="password" class="">
+                    <label for="password">Password</label>
+                    </div>
+                    <div class="col s12">
+                        <button type="submit" class="btn">Login</button>
+                    </div>
+
+                </form>
+            
+                <div class="row">
+                    <div class="col s12">
+                        <div class="divider"></div>
+                    </div>
+                </div>
+
+
+                <form class="row" id = "register_form">
+                    
+                    <div class="input-field col s6">
+                    <input id="r_username" name="userName" type="text" class="">
+                    <label for="r_username">Username</label>
+                    </div>
+                    <input type="hidden" name="type" value="register">
+                    <div class="input-field col s6">
+                    <input id="r_password" name="password" type="password" class="">
+                    <label for="r_password">Password</label>
+                    </div>
+                    <div class="col s12">
+                        <button type="submit" class="btn">Signup</button>
+                    </div>
+
+                </form>
+            
+
+            <ul id="login_users_list" class="collection with-header"></ul>
+          </div>
+        </div>
+      </div>
+      
+      <div id="messageArea" class="row" style="display: none;">
+            <div class="col s4">
+
+                <h5 class="text-secondary">Login as : <b class="" id="login_user"></b></h5>
+            </div>
+            <div class="col s8">
+
+                <h5 class="text-secondary align-right">Receiver : <b class="text-info" id="receiver"></b></h5>
+            </div>
+          <div class="col s4">
+              <div class="card">
+                  
+
+                    <ul class="collection" id="users">
+                      <li class="collection-header"><h4>Online Users</h4></li>
+                     
+  
+                    </ul>
+                  
+              </div>
+          </div>
+          <div class="col s8" style="display: none;" id="chat_window">
+            <div class="card">
+              <div class="card-content">
+                <div class="row">
+                  <div class="col s12" style="text-align: center;">
+                    
+                    <button class="waves-effect waves-light btn-small loadMore">Load More</button>
+                  </div>
+                </div>
+                <ul class="chat collection" id="chat">
+                </ul>
+
+              </div>
+              <div class="card-action">
+
+                <form autocomplete="off" id="messageForm">
+                    
+                        
+                        <input type="hidden" name="" id="room">
+                        <div class="row">
+                          <div class="col s12" style="display: flex;">
+
+                            <input type="text" class="form-control" name="message" id="message" placeholder="Enter message">
+                            <!-- <textarea class="form-control" name="message" id="message" placeholder="Enter message" style="height:15px;"></textarea> -->
+                          
+                            <input type="file" name="" id="file_upload" style="display: none;">
+
+                            
+                            <a onclick="$('#file_upload').trigger('click');" class="btn-flat waves-effect waves-dark " style="color: #777;"><i class="material-icons" style="font-weight: bold;">attach_file</i></a>
+                            <!-- <a onclick="sendFile();" class="btn-flat waves-effect waves-dark " style="color: #777;"><i class="material-icons" style="font-weight: bold;">attach_file</i></a> -->
+                            <button type="submit" class="btn-floating waves-effect waves-light red material-icons">send</button>
+                          </div>
+                        </div>
+                        
+                </form>
+              </div>
+            </div>
+            </div>
+          
+      </div>
+  </div>
+        <div id="content"></div>
+        <div>
+            <span id="status">Connecting...</span>
+            <input type="text" id="input" disabled="disabled" />
+        </div>
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+        <script src="./chat-frontend.js"></script>
+    </body>
+</html>
