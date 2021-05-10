@@ -1,6 +1,7 @@
 {
 	"scripts": {
-		"start": "nodemon chat-server.js"
+		"start": "node chat-server.js",
+		"debug": "nodemon chat-server.js"
 	},
 	"dependencies": {
 		"fcm-node": "^1.5.2",
