@@ -1169,7 +1169,6 @@ class SSChatReact {
 									});
 								}
 							});
-
 						}
 					});
 				}
