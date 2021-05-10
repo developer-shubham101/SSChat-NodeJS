@@ -205,6 +205,35 @@ class SSChatReact {
 		}
 
 	}
+	getLastMessageForNotification = (message, type) => {
+		switch (type) {
+			case "TEXT":
+				return message.substring(0, 100);
+			case "IMAGE":
+				return "📷 Image";
+			case "DOCUMENT":
+				return "📄 Document";
+			case "LOCATION":
+				return "📍 Location";
+			case "CONTACT":
+				return "📞";
+			case "VIDEO":
+				return "🎞️ Video";
+			case "IMAGE_CANDY":
+				return "📷 Candy Image";
+			case "VIDEO_CANDY":
+				return "🎞️ Candy Video";
+			case "IMAGE_PACK_CANDY":
+				return "📷 Candy Pack";
+			case "VIDEO_PACK_CANDY":
+				return "🎞️ Candy Pack";
+			case "REPlAY":
+				return "Replay";
+			default:
+				return message.substring(0, 100);
+		}
+
+	}
 
 	sendMessageToAll = (message) => {
 		Object.keys(allConnections).forEach((element) => {
@@ -1083,14 +1112,12 @@ class SSChatReact {
 								console.log(`fcmTokens::: `, fcmTokens);
 
 								let message = { //this may vary according to the message type (single recipient, multicast, topic, et cetera)
-									// to: 'dmR-mgKqSuGymuJNQ5CsSR:APA91bFkMkphaI-La1rfnNOX1P8ND8aAzy5hjt4qRN4wqpGjWgfHLB3TbkSEhrQsf9v7_dDwlpv7l8fqwTiPOiHAEItKKS0gePF9hTN5nSfNqzBu1BlRGJC04W9BVXPaNEgjJS3ouBzV',
-
 									"registration_ids": fcmTokens,
 									// collapse_key: 'your_collapse_key',
 
 									notification: {
 										title: `New message from ${senderUserDetail.firstName}`,
-										body: this.getLastMessage(messageData.message, messageData.message_type)
+										body: this.getLastMessageForNotification(messageData.message, messageData.message_type)
 									},
 
 									data: {
