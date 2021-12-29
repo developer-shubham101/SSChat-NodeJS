@@ -726,12 +726,12 @@ class SSChatReact {
 
 			/*
 			* {
-	  "request": "login",
-	  "userId": "4",
-	  "fcm_token": "qasdfghfds",
-	  "password": "123456",
-	  "type": "loginOrCreate",
-	  "userName": "ali@yopmail.com"
+		"request": "login",
+		"userId": "4",
+		"fcm_token": "qasdfghfds",
+		"password": "123456",
+		"type": "loginOrCreate",
+		"userName": "ali@yopmail.com"
 	}
 	* */
 			let rules = {
@@ -964,18 +964,18 @@ class SSChatReact {
 
 				/*
 				* {
-		  * "roomId": "608437be5c7a813378e455b5",
-		  * "room": "608437be5c7a813378e455b5",
-		  * "message": "Hiiiiiiiiiiii",
-		  * "receiver_id": "123456",
-		  * "message_type": "TEXT",
-		  *  "sender_id": "4",
-		  *
-		  "message_content": {
+			* "roomId": "608437be5c7a813378e455b5",
+			* "room": "608437be5c7a813378e455b5",
+			* "message": "Hiiiiiiiiiiii",
+			* "receiver_id": "123456",
+			* "message_type": "TEXT",
+			*  "sender_id": "4",
+			*
+			"message_content": {
 
-		  },
-		  "request": "message",
-		  "type": "addMessage"
+			},
+			"request": "message",
+			"type": "addMessage"
 		}*/
 
 
@@ -1151,14 +1151,14 @@ class SSChatReact {
 			} else if (requestData.type === 'updateMessage') {
 
 				/*{
-		  "room": "608437be5c7a813378e455b5",
-		  "messageId": "60845847bf1e5b470dba2ccb",
-		  "message_content": {
+			"room": "608437be5c7a813378e455b5",
+			"messageId": "60845847bf1e5b470dba2ccb",
+			"message_content": {
 			"asdasd": "sdasd"
-		  },
-		  "request": "message",
-		  "type": "updateMessage",
-		  "message": "asdasdasd"
+			},
+			"request": "message",
+			"type": "updateMessage",
+			"message": "asdasdasd"
 		}*/
 
 				let rules = {
