@@ -13,14 +13,6 @@ var config = require('./config');
 
 let FCM = require('fcm-node');
 let Validator = require('validatorjs');
-const fs = require("fs")
-
-const multer = require('multer')
-
-const express = require('express');
-const app = express();
-
-const upload = multer({ dest: 'uploads/', preservePath: false })
 
 let fcm = new FCM(config.serverKey);
 
@@ -80,57 +72,6 @@ var BlockModel = mongoose.model('Block', {
 	blockedTo: String,
 	isBlock: Boolean
 });
-function makeRandomString(length) {
-	var result = '';
-	var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-	var charactersLength = characters.length;
-	for (var i = 0; i < length; i++) {
-		result += characters.charAt(Math.floor(Math.random() *
-			charactersLength));
-	}
-	return result;
-}
-
-
-// route
-app.get('/', (req, res) => {
-	// Sending This is the home page! in the page
-	res.send('This is the home page!');
-});
-
-function moveFile(file) {
-	let newFileName = `${file.destination}${makeRandomString(22)}.${file.originalname.split('.').pop()}`;
-
-	fs.rename(`./${file.path}`, newFileName, (err) => {
-		if (err) console.log(err)
-	})
-
-	return newFileName;
-}
-
-app.post('/upload', upload.fields([{ name: 'file', maxCount: 1 }, { name: 'thumbnail', maxCount: 1 }]), function (req, res, next) {
-	// req.file is the `avatar` file
-	// req.body will hold the text fields, if there were any
-	// console.log(req.body);
-	// res.send(JSON.stringify(req.files));
-
-	if (req.files.file && req.files.file.length > 0) {
-		let newFileName = moveFile(req.files.file[0]);
-		let thumbnailFileName = req.files.thumbnail.length > 0 ? moveFile(req.files.thumbnail[0]) : '';
-		res.send({ statusCode: 200, data: { file: newFileName, thumbnail: thumbnailFileName }, response: 'success' });
-	} else {
-		// res.status(400).send('Please upload a file');
-		res.send(JSON.stringify(req.files));
-	}
-
-})
-
-app.use('/uploads', express.static(__dirname + '/uploads'));
-
-
-// Listening to the port
-let PORT = config.webSocketsServerPort;
-// app.listen(PORT)
 
 /**
  * HTTP server
@@ -142,8 +83,6 @@ var server = http.createServer(function (request, response) {
 	// set response content
 	response.write('<html><body><p>This is home Page.</p></body></html>');
 	response.end();
-
-
 });
 server.listen(config.webSocketsServerPort, function () {
 	// console.log((new Date()) + " Server is listening on port " + config.webSocketsServerPort);
@@ -787,12 +726,12 @@ class SSChatReact {
 
 			/*
 			* {
-	  "request": "login",
-	  "userId": "4",
-	  "fcm_token": "qasdfghfds",
-	  "password": "123456",
-	  "type": "loginOrCreate",
-	  "userName": "ali@yopmail.com"
+		"request": "login",
+		"userId": "4",
+		"fcm_token": "qasdfghfds",
+		"password": "123456",
+		"type": "loginOrCreate",
+		"userName": "ali@yopmail.com"
 	}
 	* */
 			let rules = {
@@ -1025,18 +964,18 @@ class SSChatReact {
 
 				/*
 				* {
-		  * "roomId": "608437be5c7a813378e455b5",
-		  * "room": "608437be5c7a813378e455b5",
-		  * "message": "Hiiiiiiiiiiii",
-		  * "receiver_id": "123456",
-		  * "message_type": "TEXT",
-		  *  "sender_id": "4",
-		  *
-		  "message_content": {
+			* "roomId": "608437be5c7a813378e455b5",
+			* "room": "608437be5c7a813378e455b5",
+			* "message": "Hiiiiiiiiiiii",
+			* "receiver_id": "123456",
+			* "message_type": "TEXT",
+			*  "sender_id": "4",
+			*
+			"message_content": {
 
-		  },
-		  "request": "message",
-		  "type": "addMessage"
+			},
+			"request": "message",
+			"type": "addMessage"
 		}*/
 
 
@@ -1212,14 +1151,14 @@ class SSChatReact {
 			} else if (requestData.type === 'updateMessage') {
 
 				/*{
-		  "room": "608437be5c7a813378e455b5",
-		  "messageId": "60845847bf1e5b470dba2ccb",
-		  "message_content": {
+			"room": "608437be5c7a813378e455b5",
+			"messageId": "60845847bf1e5b470dba2ccb",
+			"message_content": {
 			"asdasd": "sdasd"
-		  },
-		  "request": "message",
-		  "type": "updateMessage",
-		  "message": "asdasdasd"
+			},
+			"request": "message",
+			"type": "updateMessage",
+			"message": "asdasdasd"
 		}*/
 
 				let rules = {
