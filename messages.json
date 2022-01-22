@@ -1,0 +1,256 @@
+[
+  {
+    "_id": "61b19f3a36387e4091ba6c60",
+    "roomId": "61b19f2e36387e4091ba6c5a",
+    "message": "Hello",
+    "message_type": "TEXT",
+    "media": "",
+    "receiver_id": "123456",
+    "time": "2021-12-09T06:16:26.684Z",
+    "sender_id": "1",
+    "__v": 0,
+    "timestamp": 1639030586684
+  },
+  {
+    "_id": "61b19fba36387e4091ba6c92",
+    "roomId": "61b19f2e36387e4091ba6c5a",
+    "message": "",
+    "message_type": "IMAGE",
+    "media": "",
+    "receiver_id": "123456",
+    "time": "2021-12-09T06:18:34.622Z",
+    "sender_id": "1",
+    "message_content": {
+      "file_url": "http://127.0.0.1:8000/files/b398cff575a32915211448500f6d0224.jpg",
+      "file_meta": {
+        "file_type": "jpg",
+        "file_size": -1
+      }
+    },
+    "__v": 0,
+    "timestamp": 1639030714622
+  },
+  {
+    "_id": "61b19fbc36387e4091ba6c97",
+    "roomId": "61b19f2e36387e4091ba6c5a",
+    "message": "",
+    "message_type": "IMAGE",
+    "media": "",
+    "receiver_id": "123456",
+    "time": "2021-12-09T06:18:36.784Z",
+    "sender_id": "1",
+    "message_content": {
+      "file_url": "http://127.0.0.1:8000/files/7cd29a15c0296cf9e27f2d0248df12c5.jpg",
+      "file_meta": {
+        "file_type": "jpg",
+        "file_size": -1
+      }
+    },
+    "__v": 0,
+    "timestamp": 1639030716784
+  },
+  {
+    "_id": "61b19fca36387e4091ba6c9f",
+    "roomId": "61b19f2e36387e4091ba6c5a",
+    "message": "Hi",
+    "message_type": "TEXT",
+    "media": "",
+    "receiver_id": "123456",
+    "time": "2021-12-09T06:18:50.450Z",
+    "sender_id": "1",
+    "__v": 0,
+    "timestamp": 1639030730450
+  },
+  {
+    "_id": "61b19fd936387e4091ba6cab",
+    "roomId": "61b19f2e36387e4091ba6c5a",
+    "message": "Hi",
+    "message_type": "TEXT",
+    "media": "",
+    "receiver_id": "123456",
+    "time": "2021-12-09T06:19:05.942Z",
+    "sender_id": "1",
+    "__v": 0,
+    "timestamp": 1639030745942
+  },
+  {
+    "_id": "61b19fe136387e4091ba6cb0",
+    "roomId": "61b19f2e36387e4091ba6c5a",
+    "message": "",
+    "message_type": "CONTACT",
+    "media": "",
+    "receiver_id": "123456",
+    "time": "2021-12-09T06:19:13.815Z",
+    "sender_id": "1",
+    "message_content": {
+      "mobile": "(555) 564-8583",
+      "first_name": "Kate",
+      "middle_name": "",
+      "last_name": "Bell"
+    },
+    "__v": 0,
+    "timestamp": 1639030753815
+  },
+  {
+    "_id": "61b19fe836387e4091ba6cb8",
+    "roomId": "61b19f2e36387e4091ba6c5a",
+    "message": "",
+    "message_type": "LOCATION",
+    "media": "",
+    "receiver_id": "123456",
+    "time": "2021-12-09T06:19:20.627Z",
+    "sender_id": "1",
+    "message_content": {
+      "latitude": "26.938283",
+      "name": "Military Containment",
+      "longitude": "75.773746",
+      "address": "Jhotwara, Jaipur, Rajasthan 302039"
+    },
+    "__v": 0,
+    "timestamp": 1639030760627
+  },
+  {
+    "_id": "61b1a04036387e4091ba6cc4",
+    "roomId": "61b19f2e36387e4091ba6c5a",
+    "message": "",
+    "message_type": "IMAGE",
+    "media": "",
+    "receiver_id": "123456",
+    "time": "2021-12-09T06:20:48.399Z",
+    "sender_id": "1",
+    "message_content": {
+      "file_url": "http://127.0.0.1:8000/files/62826d27da8defd0167466e8214458d0.jpg",
+      "file_meta": {
+        "file_type": "jpg",
+        "file_size": -1
+      }
+    },
+    "__v": 0,
+    "timestamp": 1639030848399
+  },
+  {
+    "_id": "61b1a04036387e4091ba6cc9",
+    "roomId": "61b19f2e36387e4091ba6c5a",
+    "message": "",
+    "message_type": "IMAGE",
+    "media": "",
+    "receiver_id": "123456",
+    "time": "2021-12-09T06:20:48.893Z",
+    "sender_id": "1",
+    "message_content": {
+      "file_meta": {
+        "file_type": "jpg",
+        "file_size": -1
+      },
+      "file_url": "http://127.0.0.1:8000/files/14f3c05988d3b53bde60423c4ae7d9a0.jpg"
+    },
+    "__v": 0,
+    "timestamp": 1639030848893
+  },
+  {
+    "_id": "61b1a04936387e4091ba6cce",
+    "roomId": "61b19f2e36387e4091ba6c5a",
+    "message": "",
+    "message_type": "CONTACT",
+    "media": "",
+    "receiver_id": "123456",
+    "time": "2021-12-09T06:20:57.277Z",
+    "sender_id": "1",
+    "message_content": {
+      "middle_name": "",
+      "last_name": "Bell",
+      "mobile": "(555) 564-8583",
+      "first_name": "Kate"
+    },
+    "__v": 0,
+    "timestamp": 1639030857277
+  },
+  {
+    "_id": "61b1a05236387e4091ba6cd6",
+    "roomId": "61b19f2e36387e4091ba6c5a",
+    "message": "",
+    "message_type": "IMAGE",
+    "media": "",
+    "receiver_id": "123456",
+    "time": "2021-12-09T06:21:06.999Z",
+    "sender_id": "1",
+    "message_content": {
+      "file_meta": {
+        "file_type": "jpg",
+        "file_size": -1
+      },
+      "file_url": "http://127.0.0.1:8000/files/4218e92b14c61f65744bdab56464d09f.jpg"
+    },
+    "__v": 0,
+    "timestamp": 1639030866999
+  },
+  {
+    "_id": "61b1a05336387e4091ba6cdb",
+    "roomId": "61b19f2e36387e4091ba6c5a",
+    "message": "",
+    "message_type": "IMAGE",
+    "media": "",
+    "receiver_id": "123456",
+    "time": "2021-12-09T06:21:07.607Z",
+    "sender_id": "1",
+    "message_content": {
+      "file_meta": {
+        "file_type": "jpg",
+        "file_size": -1
+      },
+      "file_url": "http://127.0.0.1:8000/files/ef017e0002d6ca46e207a3f11667bf03.jpg"
+    },
+    "__v": 0,
+    "timestamp": 1639030867607
+  },
+  {
+    "_id": "61b1a1df36387e4091ba6cf6",
+    "roomId": "61b19f2e36387e4091ba6c5a",
+    "message": "",
+    "message_type": "IMAGE",
+    "media": "",
+    "receiver_id": "123456",
+    "time": "2021-12-09T06:27:43.406Z",
+    "sender_id": "2",
+    "message_content": {
+      "file_meta": {
+        "file_size": -1,
+        "file_type": "jpg"
+      },
+      "file_url": "http://127.0.0.1:8000/files/37f21be314eb1264febe82f45c0e603a.jpg"
+    },
+    "__v": 0,
+    "timestamp": 1639031263406
+  },
+  {
+    "_id": "61b1a1df36387e4091ba6cf4",
+    "roomId": "61b19f2e36387e4091ba6c5a",
+    "message": "",
+    "message_type": "IMAGE",
+    "media": "",
+    "receiver_id": "123456",
+    "time": "2021-12-09T06:27:43.236Z",
+    "sender_id": "2",
+    "message_content": {
+      "file_meta": {
+        "file_size": -1,
+        "file_type": "jpg"
+      },
+      "file_url": "http://127.0.0.1:8000/files/becc8b2f1020463f3f341caea8f52f09.jpg"
+    },
+    "__v": 0,
+    "timestamp": 1639031263236
+  },
+  {
+    "_id": "61b1a1e536387e4091ba6cfe",
+    "roomId": "61b19f2e36387e4091ba6c5a",
+    "message": "Hi",
+    "message_type": "TEXT",
+    "media": "",
+    "receiver_id": "123456",
+    "time": "2021-12-09T06:27:49.370Z",
+    "sender_id": "2",
+    "__v": 0,
+    "timestamp": 1639031269370
+  }
+]
