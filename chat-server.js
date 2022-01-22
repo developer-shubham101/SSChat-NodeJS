@@ -130,7 +130,7 @@ app.use('/uploads', express.static(__dirname + '/uploads'));
 
 // Listening to the port
 let PORT = config.webSocketsServerPort;
-app.listen(PORT)
+// app.listen(PORT)
 
 /**
  * HTTP server
