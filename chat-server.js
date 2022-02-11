@@ -9,10 +9,18 @@ process.title = 'node-chat';
 var webSocketServer = require('websocket').server;
 var http = require('http');
 var mongoose = require('mongoose');
-var config = require('./config');
-
 let FCM = require('fcm-node');
 let Validator = require('validatorjs');
+const fs = require("fs")
+const multer = require('multer')
+const express = require('express');
+
+var config = require('./config');
+
+
+const app = express();
+
+const upload = multer({ dest: 'uploads/', preservePath: false })
 
 let fcm = new FCM(config.serverKey);
 
@@ -56,6 +64,7 @@ var RoomModel = mongoose.model('Room', {
 	type: String, //group/individual
 	last_message: Object,
 	last_message_time: Date,
+	create_time: Date,
 	message_info: Object,
 	group_details: Object,
 	users_meta: Object,
@@ -72,22 +81,78 @@ var BlockModel = mongoose.model('Block', {
 	blockedTo: String,
 	isBlock: Boolean
 });
+function makeRandomString(length) {
+	var result = '';
+	var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+	var charactersLength = characters.length;
+	for (var i = 0; i < length; i++) {
+		result += characters.charAt(Math.floor(Math.random() *
+			charactersLength));
+	}
+	return result;
+}
+
+
+// route
+app.get('/', (req, res) => {
+	// Sending This is the home page! in the page
+	res.send('This is the home page! in Express');
+});
+
+function moveFile(file) {
+	let newFileName = `${file.destination}${makeRandomString(22)}.${file.originalname.split('.').pop()}`;
+
+	fs.rename(`./${file.path}`, newFileName, (err) => {
+		if (err) console.log(err)
+	})
+
+	return newFileName;
+}
+
+app.post('/upload', upload.fields([{ name: 'file', maxCount: 1 }, { name: 'thumbnail', maxCount: 1 }]), function (req, res, next) {
+	// req.file is the `avatar` file
+	// req.body will hold the text fields, if there were any
+	// console.log(req.body);
+	// res.send(JSON.stringify(req.files));
+
+	if (req.files.file && req.files.file.length > 0) {
+		let newFileName = moveFile(req.files.file[0]);
+		let thumbnailFileName = req.files.thumbnail?.length > 0 ? moveFile(req.files.thumbnail[0]) : '';
+		res.send({ status_code: 200, data: { file: newFileName, thumbnail: thumbnailFileName }, response: 'success' });
+	} else {
+		// res.status(400).send('Please upload a file');
+		res.send(JSON.stringify(req.files));
+	}
+
+})
+
+app.use('/uploads', express.static(__dirname + '/uploads'));
+
+
 
 /**
  * HTTP server
  */
-var server = http.createServer(function (request, response) {
+/* var server = http.createServer(function (request, response) {
 	// set response header
 	response.writeHead(200, { 'Content-Type': 'text/html' });
 
 	// set response content
 	response.write('<html><body><p>This is home Page.</p></body></html>');
 	response.end();
+
+
 });
 server.listen(config.webSocketsServerPort, function () {
 	// console.log((new Date()) + " Server is listening on port " + config.webSocketsServerPort);
 	console.log("Express server listening on port::: ", config.webSocketsServerPort);
 
+}); */
+
+var server = http.createServer(app);
+
+server.listen(config.webSocketsServerPort, function () {
+	console.log("Express server listening on port::: ", config.webSocketsServerPort);
 });
 
 /**
@@ -112,7 +177,6 @@ wsServer.on('request', function (request) {
 		console.log(`Connection from origin ${request.origin} rejected. At ${new Date()}`);
 
 	}
-	// chatRequest(request);
 });
 
 
@@ -572,6 +636,7 @@ class SSChatReact {
 				}
 
 				findObject['last_message_time'] = new Date();
+				findObject['create_time'] = new Date();
 				findObject['userList'] = userList;
 				findObject['createBy'] = createBy;
 
@@ -636,8 +701,6 @@ class SSChatReact {
 					useFindAndModify: false
 				}, (err, updatedRoom) => {
 					// console.log("updatedRoom:::", updatedRoom);
-
-
 					if (err) {
 						connection.sendUTF(this.responseError(500, "roomsModified", "Internal Server Error.", true));
 					} else {
@@ -646,6 +709,49 @@ class SSChatReact {
 					}
 
 				});
+			}
+		} else if (requestData.type == 'removeUser') {
+			var roomId = requestData.roomId;
+
+			if (!this.isFine(roomId)) {
+				connection.sendUTF(this.responseError(400, "roomsModified", "Please add room id.", true));
+			} else {
+
+
+				RoomModel.find({ _id: mongoose.Types.ObjectId(roomId) }).exec((err, messages) => {
+					//res.send(messages);
+					// console.log(`On connect Error:::${err} data:::`, messages);
+					// connection.sendUTF(`user login successfully ${messages}`);
+
+					if (messages && messages.length > 0) {
+						console.log(`Room Data Found....`, messages);
+
+
+						let dataToUpdate = messages[0];
+
+						dataToUpdate.userList = dataToUpdate.userList.filter(item => item != requestData.userId);
+						delete dataToUpdate.users[requestData.userId];
+
+
+						RoomModel.findOneAndUpdate({ _id: mongoose.Types.ObjectId(roomId) }, dataToUpdate, {
+							new: false,
+							useFindAndModify: false
+						}, (err, updatedRoom) => {
+							console.log("updatedRoom:::", updatedRoom);
+							if (err) {
+								connection.sendUTF(this.responseError(500, "roomsModified", "Internal Server Error.", true));
+							} else {
+								connection.sendUTF(this.responseSuccess(200, "roomsModified", updatedRoom, "Data updated successfully.", true));
+							}
+
+						});
+
+					} else {
+						connection.sendUTF(this.responseError(404, "roomsDetails", "Not Found", true));
+					}
+				});
+
+
 			}
 		}
 	}

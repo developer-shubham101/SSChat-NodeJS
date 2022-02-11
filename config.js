@@ -7,7 +7,7 @@ config.isSendPushNotification = true;
 // SSChat React
 // config.serverKey = 'AAAAvvRfWBg:APA91bFUq2aKcEeodJab7UjMLUVXLgMXgJC26g0yReAOpziaDMqkzWJfWIfEEyiDwQmn_VVXd2LJS8hS6xIrIG3TBEWupOfOGt1rCn1qh8pR_TOltJw8MMkppvtfAdHuBMBwDij1HeC3';
 //Tryst
-config.serverKey = 'AAAAP4u6PVI:APA91bEWx0iGiQT4_4RYXd5sW3eeQ3ThQwGfA2scuWWqrvObMs0OMiIpsPhBvcrXlW_oSJAJHw_qjq0ZDOeD1gI84Dd_5kLLJ1OM0XHwexvtdj5tsWftCLEb_dsQf0cZqFNQfZSUhati'; //put your server key here
+config.serverKey = 'AAAAdl4ExyE:APA91bHY_PtnWTo6xN2H_5a1cXbOicQYMTZrM9HBkjTaZ1jxB-5LEsrdVMonjU4-QjVCLKU3buAx3knwaJVq56MvSA78-cPxQqDVtpxor03I1DyS1rmUPkDxmUXt6l7zRSkgJj8SOyG5'; //put your server key here
 
 // MongoDB Url
 // config.dbUrl = 'mongodb://127.0.0.1:27017/Tryste-TmpV1';//  ReactChat
