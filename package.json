@@ -8,9 +8,9 @@
 	"scripts": {
 		"start": "node src/chat-server.js",
 		"debug": "nodemon src/chat-server.js",
-		"deploy:local": "./deploy.sh local",
-		"deploy:server": "./deploy.sh production",
-		"deploy:public": "./deploy.sh public"
+		"deploy:local": "./app-deploy.sh local",
+		"deploy:server": "./app-deploy.sh production",
+		"deploy:public": "./app-deploy.sh public"
 	},
 	"nodemonConfig": {
 		"ignore": ["uploads/*"]
