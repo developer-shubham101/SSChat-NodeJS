@@ -6,7 +6,12 @@ PRODUCTION_ENV_NAME="public"
 
 
 if [ "$PRODUCTION_ENV_NAME" = "$ENV" ]; then
-   rm ./src/config.js
+rm ./src/config.js
+
+git add .
+git commit -m "make it better"
+ssh -T git@developershubham
+git push
    
 else
 cp ./config/config.js  ./src/config.js
@@ -28,9 +33,3 @@ git commit -m "$dialogText"
 git push heroku master
 
 fi
- 
-
-
-
-# ssh -T git@developershubham
-# git push
