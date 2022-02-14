@@ -11,7 +11,7 @@ rm ./src/config.js
 git add .
 git commit -m "make it better"
 ssh -T git@developershubham
-git push
+git push origin master
    
 else
 cp ./config/config.js  ./src/config.js
