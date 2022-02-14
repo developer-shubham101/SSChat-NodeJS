@@ -1,7 +1,16 @@
 {
+	"name": "sschat-react",
+	"author": "Shubham Sharma",
+	"email": "developer.shubham101@gmail.com",
+	"license": "MIT",
+	"version": "0.0.1",
+	"private": false,
 	"scripts": {
-		"start": "node chat-server.js",
-		"debug": "nodemon chat-server.js"
+		"start": "node src/chat-server.js",
+		"debug": "nodemon src/chat-server.js",
+		"deploy:local": "./deploy.sh local",
+		"deploy:server": "./deploy.sh production",
+		"deploy:public": "./deploy.sh public"
 	},
 	"nodemonConfig": {
 		"ignore": ["uploads/*"]

@@ -152,7 +152,7 @@ server.listen(config.webSocketsServerPort, function () {
 var server = http.createServer(app);
 
 server.listen(config.webSocketsServerPort, function () {
-	console.log("Express server listening on port::: ", config.webSocketsServerPort);
+	console.log("Express server listening on port::: ", `http://localhost:${config.webSocketsServerPort}`);
 });
 
 /**

@@ -1,0 +1,90 @@
+https://devcenter.kinvey.com/rest/guides/roles
+
+How to send Request
+
+Which request type should use
+
+GET:
+List and read
+
+POST:
+Create
+
+PUT:
+Update
+
+DELETE:
+Delete
+
+------
+header
+Any kind of auth token
+Language type
+Content-Type
+
+POST/PUT request should accept json/row(in post man) data not form data or application/x-www-form-urlencoded
+
+
+
+
+
+Response->
+header Content-Type: application/json
+
+body should contains:
+-> Response status like success/fail
+-> Response code like 400, 403, 404, 200 etc. more code https://www.restapitutorial.com/httpstatuscodes.html
+-> Response should be in same format all the time
+eg.
+{
+    "message": "List success fully fetched",
+    "code": 200,
+    "data": [
+        {
+            "id": 1,
+            "name": "Math",
+            "icon_image": "http://138.68.8.200/media/icons/upload/2019/02/15/math.png"
+        },
+        {
+            "id": 2,
+            "name": "Bio",
+            "icon_image": "http://138.68.8.200/media/icons/upload/2019/02/15/bio.png"
+        },
+        {
+            "id": 3,
+            "name": "Physics",
+            "icon_image": "http://138.68.8.200/media/icons/upload/2019/02/15/physic.png"
+        },
+        {
+            "id": 4,
+            "name": "English",
+            "icon_image": "http://138.68.8.200/media/icons/upload/2019/02/15/chemistry.png"
+        }
+    ]
+}
+
+message, code and data should be present all the time even if error
+eg 
+{
+    "message": "You are Unauthorized",
+    "code": 401,
+    "data": []
+}
+
+in this case user is Unauthorized so data key's data type is still same array
+
+-> Value should not be Null 
+if there is any null value then value will be
+
+String = ""
+Int = 0
+Double = 0
+boolean = false/true
+array = [] // blank array
+object = {} //blank object
+
+And int should be always int 
+6 != "6"
+false != "false"
+3.3 != "3.3"
+
