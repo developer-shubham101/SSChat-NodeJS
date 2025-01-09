@@ -1,6 +1,7 @@
+const { sendMessageToUser } = require('../connections');
 const { isFine } = require('./../utility');
 
-  async function blockUser(requestData, connection, ssChatInstance) {
+async function blockUser(requestData, connection) {
 
   if (requestData.type == 'allBlockUser') {
     if (!isFine(requestData.user)) {
@@ -57,8 +58,8 @@ const { isFine } = require('./../utility');
             if (data) {
               // console.log("allBlockUser", data);
               // Notify to all active user about that user status
-              ssChatInstance.sendMessageToUser(requestData.blockedBy, responseSuccess(200, "blockUser", data[0], "Block Status Changed", true));
-              ssChatInstance.sendMessageToUser(requestData.blockedTo, responseSuccess(200, "blockUser", data[0], "Block Status Changed", true));
+              sendMessageToUser(requestData.blockedBy, responseSuccess(200, "blockUser", data[0], "Block Status Changed", true));
+              sendMessageToUser(requestData.blockedTo, responseSuccess(200, "blockUser", data[0], "Block Status Changed", true));
 
             }
           });

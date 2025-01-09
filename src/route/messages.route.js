@@ -1,5 +1,15 @@
+const mongoose = require('mongoose');
+const { UsersModel, MessageModel, RoomModel, BlockModel } = require('../model');
+const { responseSuccess, responseError, isFine, formatTheMessages, getLastMessage, getLastMessageForNotification } = require('../utility');
 
-export async function messageRequest(requestData, connection, ssChatInstance) {
+const Validator = require('validatorjs');
+const { sendMessageToUser } = require('../connections');
+const config = require('../config');
+
+
+
+
+async function messageRequest(requestData, connection) {
   const key = requestData.room;
   console.log('key-----', key);
 
@@ -20,7 +30,7 @@ export async function messageRequest(requestData, connection, ssChatInstance) {
         if (messages && messages.length > 0) {
           console.log(`All Message Found....`);
           let formatMessages = messages.map((element) => {
-            return ssChatInstance.formatTheMessages(element);
+            return formatTheMessages(element);
           });
 
           connection.sendUTF(responseSuccess(200, "message", formatMessages, "message All list", true));
@@ -39,8 +49,8 @@ export async function messageRequest(requestData, connection, ssChatInstance) {
     "message": "Hiiiiiiiiiiii",
     "receiver_id": "123456",
     "message_type": "TEXT",
-    *  "sender_id": "4",
-    *
+   "sender_id": "4",
+   
     "message_content": {
 
     },
@@ -124,7 +134,7 @@ export async function messageRequest(requestData, connection, ssChatInstance) {
               newMessageInfo = { unread: unread }
             }
 
-            newMessageInfo["last_message"] = ssChatInstance.getLastMessage(messageData.message, messageData.message_type);
+            newMessageInfo["last_message"] = getLastMessage(messageData.message, messageData.message_type);
             newMessageInfo["last_message_time"] = new Date();
 
             console.log('MessageRequest:::: newMessageInfo:: ', newMessageInfo);
@@ -147,17 +157,17 @@ export async function messageRequest(requestData, connection, ssChatInstance) {
               } else {
                 let messageToSend = responseSuccess(200, "roomsModified", updatedRoom, "Modified", true);
                 room.userList.forEach(user => {
-                  ssChatInstance.sendMessageToUser(user, messageToSend);
+                  sendMessageToUser(user, messageToSend);
                 });
               }
 
             });
 
-            let formattedMessages = ssChatInstance.formatTheMessages(savedMessage);
+            let formattedMessages = formatTheMessages(savedMessage);
 
             let messageToSend = responseSuccess(201, "message", formattedMessages, "Data Found", true);
             room.userList.forEach(user => {
-              ssChatInstance.sendMessageToUser(user, messageToSend);
+              sendMessageToUser(user, messageToSend);
             });
 
             // let receverUserListId = room.userList.filter((element) => {
@@ -187,7 +197,7 @@ export async function messageRequest(requestData, connection, ssChatInstance) {
 
                 notification: {
                   title: `New message from ${senderUserDetail.firstName}`,
-                  body: ssChatInstance.getLastMessageForNotification(messageData.message, messageData.message_type)
+                  body: getLastMessageForNotification(messageData.message, messageData.message_type)
                 },
 
                 data: {
@@ -262,7 +272,7 @@ export async function messageRequest(requestData, connection, ssChatInstance) {
               if (roomData.length > 0) {
                 roomData[0].userList.forEach((userId) => {
                   // console.log("Sending Message To", userId, data);
-                  ssChatInstance.sendMessageToUser(userId, responseSuccess(200, "updateMessage", ssChatInstance.formatTheMessages(data), "Modified", true))
+                  sendMessageToUser(userId, responseSuccess(200, "updateMessage", formatTheMessages(data), "Modified", true))
                 });
               }
             });
@@ -273,3 +283,5 @@ export async function messageRequest(requestData, connection, ssChatInstance) {
 
   }
 }
+
+module.exports = { messageRequest };

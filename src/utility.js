@@ -1,5 +1,12 @@
 const isFine = (item) => !(item === '' || item === 'undefined' || item === null);
 
+const formatTheMessages = (message) => {
+  message = JSON.parse(JSON.stringify(message));
+
+  message = { ...message, "timestamp": new Date(message.time).getTime() };
+  return message;
+
+}
 
 const makeRandomString = (length) => {
   let result = '';
@@ -40,4 +47,49 @@ const responseError = (code, type, message, toString) => {
   }
 };
 
-module.exports = { isFine, responseError, responseSuccess, makeRandomString };
+
+const getLastMessage = (message, type) => {
+  switch (type) {
+    case "TEXT":
+      return message.substring(0, 100);
+    case "IMAGE":
+      return "📷";
+    case "DOCUMENT":
+      return "📄";
+    case "LOCATION":
+      return "📍";
+    case "CONTACT":
+      return "📞";
+    case "VIDEO":
+      return "🎞️";
+    case "REPlAY":
+      return "Replay";
+    default:
+      return message.substring(0, 100);
+  }
+
+}
+const getLastMessageForNotification = (message, type) => {
+  switch (type) {
+    case "TEXT":
+      return message.substring(0, 100);
+    case "IMAGE":
+      return "📷 Image";
+    case "DOCUMENT":
+      return "📄 Document";
+    case "LOCATION":
+      return "📍 Location";
+    case "CONTACT":
+      return "📞";
+    case "VIDEO":
+      return "🎞️ Video";
+    case "REPlAY":
+      return "Replay";
+    default:
+      return message.substring(0, 100);
+  }
+
+}
+
+
+module.exports = { isFine, responseError, responseSuccess, makeRandomString, formatTheMessages, getLastMessage, getLastMessageForNotification };

@@ -1,14 +1,17 @@
 
-let Validator = require('validatorjs');
+const Validator = require('validatorjs');
 
-var { UsersModel, MessageModel, RoomModel, BlockModel } = require('./../model');
+const { UsersModel } = require('./../model');
 const { isFine, responseSuccess } = require('../utility');
-const { addConnectionToList } = require('../connections');
-const { updateOnlineStatus } = require('../update-user');
+ 
+const { updateOnlineStatus, sendMessageToAll } = require('../update-user');
+const { addConnectionToList  } = require('../connections');
+ 
+
 
 let loginUsers = {};
 
-async function loginRequest(requestData, connection, ssChatInstance) {
+async function loginRequest(requestData, connection) {
   if (requestData.type == 'login') {
 
     // login validation
@@ -36,7 +39,7 @@ async function loginRequest(requestData, connection, ssChatInstance) {
 
           let userId = userData['userId'];
 
-          ssChatInstance.addConnectionToList(connection, userId);
+          addConnectionToList(connection, userId);
 
           loginUsers[userId] = userData;
 
@@ -53,7 +56,7 @@ async function loginRequest(requestData, connection, ssChatInstance) {
           console.log(`user login successfully`, userData);
           connection.sendUTF(responseSuccess(200, "login", userData, "Login Success", true));
 
-          ssChatInstance.updateOnlineStatus(userId, true);
+          updateOnlineStatus(userId, true);
 
         }
 
@@ -121,7 +124,8 @@ async function loginRequest(requestData, connection, ssChatInstance) {
 
         } else {
 
-          let userId = userData['userId'];
+          let userId = userData['userId']; 
+          
           addConnectionToList(connection, userId);
 
           loginUsers[userId] = userData;
@@ -247,7 +251,7 @@ async function loginRequest(requestData, connection, ssChatInstance) {
 
           if (findUser && findUser.length > 0) {
             /// Notify to all active user about that user profile
-            ssChatInstance.sendMessageToAll(responseSuccess(200, "userModified", findUser[0], "User Details Changed", true))
+            sendMessageToAll(responseSuccess(200, "userModified", findUser[0], "User Details Changed", true))
           }
         });
 

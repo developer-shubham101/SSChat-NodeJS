@@ -1,58 +1,113 @@
-export async function roomRequest(requestData, connection, ssChatInstance) {
-  if (requestData.type == 'roomsDetails') {
+const mongoose = require('mongoose');
+const { UsersModel, RoomModel } = require('../model');
+const { responseSuccess, responseError, isFine } = require('../utility');
+const Validator = require('validatorjs'); 
+const { sendMessageToUser } = require('../connections');
+
+/**
+ * Creates a new room and notifies users.
+ * @param {Object} roomData - The room data to be saved.
+ * @param {Object} connection - The WebSocket connection object.
+ */
+const createNewRoom = (roomData, connection) => {
+  let room = new RoomModel(roomData);
+
+  room.save().then((savedRoom) => {
+    if (savedRoom) {
+      notifyNewRoom(savedRoom);
+    } else {
+      connection.sendUTF(responseError(500, "createRoom", "Failed to create room", true));
+    }
+  }).catch((error) => {
+    console.error("Room failed to save.", error);
+    connection.sendUTF(responseError(500, "createRoom", "Failed to create room", true));
+  });
+};
+
+/**
+ * Notifies users about the new room.
+ * @param {Object} savedRoom - The saved room object.
+ */
+const notifyNewRoom = (savedRoom) => {
+  let query = { userId: { $in: savedRoom.userList } };
+
+  UsersModel.find(query, (err, users) => {
+    if (err) {
+      console.error("Error finding users for notification.", err);
+      return;
+    }
+
+    users = users.map(user => ({
+      "_id": "",
+      "userName": "",
+      "password": "",
+      "userId": 0,
+      "fcm_token": "",
+      "device_id": "",
+      "is_online": false,
+      "last_seen": "",
+      "firstName": "",
+      "profile_pic": "",
+      ...JSON.parse(JSON.stringify(user))
+    }));
+
+    let responseData = { newRoom: savedRoom, userList: users };
+    savedRoom.userList.forEach(userId => {
+      sendMessageToUser(userId, responseSuccess(200, "createRoom", responseData, "New Room Created", true));
+    });
+  });
+};
+
+/**
+ * Handles room-related requests.
+ * @param {Object} requestData - The request data.
+ * @param {Object} connection - The WebSocket connection object.
+ */
+async function roomRequest(requestData, connection) {
+  if (requestData.type === 'roomsDetails') {
     if (!requestData.roomId) {
       connection.sendUTF(responseError(400, "roomsDetails", "Please enter room id", true));
+      return;
     }
+
     let roomId = requestData.roomId;
 
-    RoomModel.find({ _id: mongoose.Types.ObjectId(roomId) }).exec((err, messages) => {
-      //res.send(messages);
-      // console.log(`On connect Error:::${err} data:::`, messages);
-      // connection.sendUTF(`user login successfully ${messages}`);
+    try {
+      let rooms = await RoomModel.find({ _id: mongoose.Types.ObjectId(roomId) }).exec();
 
-      if (messages && messages.length > 0) {
-        console.log(`Room Data Found....`, messages);
-        let usersList = [];
-        messages.forEach((element) => {
-          usersList = usersList.concat(Object.keys(element.users));
-        });
-
+      if (rooms && rooms.length > 0) {
+        let usersList = rooms.reduce((acc, room) => acc.concat(Object.keys(room.users)), []);
         usersList = [...new Set(usersList)];
 
-        let fondData = { userId: { $in: usersList } };
-        // { "userName": requestData.userName, "password": requestData.password };
-        UsersModel.find(fondData, (err, userList) => {
+        let query = { userId: { $in: usersList } };
+        let users = await UsersModel.find(query).exec();
 
-          userList = userList.map((element) => {
-            let x = Object.assign({}, {
-              "_id": "",
-              "userName": "",
-              "password": "",
-              "userId": 0,
-              "fcm_token": "",
-              "device_id": "",
-              "is_online": false,
-              "last_seen": "",
-              "firstName": "",
-              "profile_pic": ""
-            }, JSON.parse(JSON.stringify(element)))
-            // console.log(x);
-            return x;
-          })
+        users = users.map(user => ({
+          "_id": "",
+          "userName": "",
+          "password": "",
+          "userId": 0,
+          "fcm_token": "",
+          "device_id": "",
+          "is_online": false,
+          "last_seen": "",
+          "firstName": "",
+          "profile_pic": "",
+          ...JSON.parse(JSON.stringify(user))
+        }));
 
-          let responseData = { roomList: messages, userList: userList };
-          // console.log(`responseData::: `, responseData);
-          connection.sendUTF(responseSuccess(200, "roomsDetails", responseData, "Data Found", true));
-          // userList
-        });
+        let responseData = { roomList: rooms, userList: users };
+        connection.sendUTF(responseSuccess(200, "roomsDetails", responseData, "Data Found", true));
       } else {
         connection.sendUTF(responseError(404, "roomsDetails", "Not Found", true));
       }
-    });
-  } else if (requestData.type == 'allRooms') {
+    } catch (err) {
+      console.error(`Error fetching room details for roomId: ${roomId}`, err);
+      connection.sendUTF(responseError(500, "roomsDetails", "Internal Server Error", true));
+    }
+  } else if (requestData.type === 'allRooms') {
     let rules = {
-      // userList: 'required|array|min:1'
-      userList: 'array'
+      userList: 'required|array|min:1'
     };
 
     let validation = new Validator(requestData, rules);
@@ -60,57 +115,39 @@ export async function roomRequest(requestData, connection, ssChatInstance) {
     if (validation.fails()) {
       connection.sendUTF(responseError(400, "allRooms", validation.errors, true));
     } else {
+      let userList = requestData.userList.map((userId) => `${userId}`);
+      let query = {};
 
-      let userList = requestData.userList;
-
-      let findObject = {};
-      userList.forEach((element) => {
-        findObject[`users.${element}`] = true;
+      userList.forEach(userId => {
+        query[`users.${userId}`] = true;
       });
 
-      console.log(findObject);
-      RoomModel.find(findObject).sort({ last_message_time: -1 }).exec((err, messages) => {
-        //res.send(messages);
-        // console.log(`On connect Error:::${err} data:::`, messages);
-        // connection.sendUTF(`user login successfully ${messages}`);
-
-        if (messages && messages.length > 0) {
-          console.log(`Room Data Found....`, messages);
-          let usersList = [];
-          messages.forEach((element) => {
-            usersList = usersList.concat(Object.keys(element.users));
-          });
-
+      RoomModel.find(query).sort({ last_message_time: -1 }).exec((err, rooms) => {
+        if (rooms && rooms.length > 0) {
+          let usersList = rooms.reduce((acc, room) => acc.concat(Object.keys(room.users)), []);
           usersList = [...new Set(usersList)];
 
-          let fondData = { userId: { $in: usersList } };
-          // { "userName": requestData.userName, "password": requestData.password };
-          UsersModel.find(fondData, (err, userList) => {
-            // console.log("userList", userList);
+          let userQuery = { userId: { $in: usersList } };
+          UsersModel.find(userQuery, (err, users) => {
             if (err) {
               connection.sendUTF(responseError(500, "allRooms", "Some technical error", true));
             } else {
-              userList = userList.map((element) => {
-                let x = Object.assign({}, {
-                  "_id": "",
-                  "userName": "",
-                  "password": "",
-                  "userId": 0,
-                  "fcm_token": "",
-                  "device_id": "",
-                  "is_online": false,
-                  "last_seen": "",
-                  "firstName": "",
-                  "profile_pic": ""
-                }, JSON.parse(JSON.stringify(element)))
-                // console.log(x);
-                return x;
-              })
+              users = users.map(user => ({
+                "_id": "",
+                "userName": "",
+                "password": "",
+                "userId": 0,
+                "fcm_token": "",
+                "device_id": "",
+                "is_online": false,
+                "last_seen": "",
+                "firstName": "",
+                "profile_pic": "",
+                ...JSON.parse(JSON.stringify(user))
+              }));
 
-              let responseData = { roomList: messages, userList: userList };
-              // console.log(`responseData::: `, responseData);
+              let responseData = { roomList: rooms, userList: users };
               connection.sendUTF(responseSuccess(200, "allRooms", responseData, "Data Found", true));
-              // userList
             }
           });
         } else {
@@ -118,10 +155,7 @@ export async function roomRequest(requestData, connection, ssChatInstance) {
         }
       });
     }
-
-
-  } else if (requestData.type == 'createRoom') {
-
+  } else if (requestData.type === 'createRoom') {
     let rules = {
       userList: 'required|array|min:1',
       createBy: 'required'
@@ -129,14 +163,27 @@ export async function roomRequest(requestData, connection, ssChatInstance) {
 
     let validation = new Validator(requestData, rules);
 
-    let userList = requestData.userList;
-    let createBy = requestData.createBy;
-
     if (validation.fails()) {
       connection.sendUTF(responseError(400, "createRoom", validation.errors, true));
     } else {
-      // var roomType = requestData.roomType;
+      
       let findObject = {};
+      let userList = requestData.userList.map((userId) => `${userId}`);
+      userList.forEach((element) => {
+        findObject[`users.${element}`] = true;
+      });
+      let createBy = requestData.createBy;
+      let roomData = {
+        ...findObject,
+        userList,
+        createBy,
+        last_message_time: new Date(),
+        create_time: new Date(),
+        type: requestData.room_type === "group" ? "group" : "individual",
+        group_details: requestData.room_type === "group" ? { group_name: "untitled group", ...requestData.group_details } : undefined
+      };
+
+      /* let findObject = {};
       userList.forEach((element) => {
         findObject[`users.${element}`] = true;
       });
@@ -154,120 +201,83 @@ export async function roomRequest(requestData, connection, ssChatInstance) {
       findObject['last_message_time'] = new Date();
       findObject['create_time'] = new Date();
       findObject['userList'] = userList;
-      findObject['createBy'] = createBy;
+      findObject['createBy'] = createBy; */
 
-      if (userList.length == 2) {
+      if (userList.length === 2) {
+        let existingRoom = await RoomModel.find({ userList: { $all: userList, $size: userList.length } });
 
-        let group = await RoomModel.find({ userList: { $all: userList, $size: userList.length } });
-        // let group = await RoomModel.find({ 'users.anil' : true,  'users.shubhum' : true , userList: {$size : 2}});
-        // let group = await RoomModel.find({ 'users.anil' : true,  'users.shubhum' : true });
-        if (group.length) {
-          console.log('Group already exists');
-
-          ssChatInstance.createNewRoomNotify(group[0]);
-
-          // connection.sendUTF(responseSuccess(200, "createRoom", group[0], "New Room Created", true));
+        if (existingRoom.length) {
+          notifyNewRoom(existingRoom[0]);
         } else {
-          ssChatInstance.createNewRoom(findObject, connection);
+          createNewRoom(roomData, connection);
         }
       } else {
-        ssChatInstance.createNewRoom(findObject, connection);
+        createNewRoom(roomData, connection);
       }
-
     }
+  } else if (requestData.type === 'checkRoom') {
+    let userList = requestData.userList;
+    let query = { userList: { $all: userList, $size: userList.length } };
 
+    let existingRoom = await RoomModel.find(query);
 
-  } else if (requestData.type == 'checkRoom') {
-
-    var userList = requestData.userList;
-
-
-    // var roomType = requestData.roomType;
-    let findObject = {};
-    userList.forEach((element) => {
-      findObject[`users.${element}`] = true;
-    });
-
-
-    let group = await RoomModel.find({ userList: { $all: userList, $size: userList.length } });
-    // let group = await RoomModel.find({ 'users.anil' : true,  'users.shubhum' : true , userList: {$size : 2}});
-    // let group = await RoomModel.find({ 'users.anil' : true,  'users.shubhum' : true });
-    if (group.length) {
-      // console.log('Group already exists');
-      connection.sendUTF(responseSuccess(200, "checkRoom", group[0], "Room already exist", true));
+    if (existingRoom.length) {
+      connection.sendUTF(responseSuccess(200, "checkRoom", existingRoom[0], "Room already exists", true));
     } else {
-      // console.log('Group not already exists');
-      connection.sendUTF(responseError(404, "checkRoom", {}, "Room not exist", true));
+      connection.sendUTF(responseError(404, "checkRoom", {}, "Room does not exist", true));
     }
-  } else if (requestData.type == 'roomsModify') {
-
-
-    var roomId = requestData.roomId;
+  } else if (requestData.type === 'roomsModify') {
+    let roomId = requestData.roomId;
 
     if (!isFine(roomId)) {
       connection.sendUTF(responseError(400, "roomsModified", "Please add room id.", true));
     } else {
-      let dataToUpdate = {};
+      let updateData = {};
+
       if (isFine(requestData.unread)) {
-        dataToUpdate[`unread.${requestData.unread}`] = 0;
+        updateData[`unread.${requestData.unread}`] = 0;
       }
 
-      RoomModel.findOneAndUpdate({ _id: mongoose.Types.ObjectId(roomId) }, dataToUpdate, {
+      RoomModel.findOneAndUpdate({ _id: mongoose.Types.ObjectId(roomId) }, updateData, {
         new: false,
         useFindAndModify: false
       }, (err, updatedRoom) => {
-        // console.log("updatedRoom:::", updatedRoom);
         if (err) {
           connection.sendUTF(responseError(500, "roomsModified", "Internal Server Error.", true));
         } else {
           updatedRoom[`unread`][requestData.unread] = 0;
           connection.sendUTF(responseSuccess(200, "roomsModified", updatedRoom, "Data updated successfully.", true));
         }
-
       });
     }
-  } else if (requestData.type == 'removeUser') {
-    var roomId = requestData.roomId;
+  } else if (requestData.type === 'removeUser') {
+    let roomId = requestData.roomId;
 
     if (!isFine(roomId)) {
       connection.sendUTF(responseError(400, "roomsModified", "Please add room id.", true));
     } else {
+      RoomModel.find({ _id: mongoose.Types.ObjectId(roomId) }).exec((err, rooms) => {
+        if (rooms && rooms.length > 0) {
+          let room = rooms[0];
+          room.userList = room.userList.filter(userId => userId !== requestData.userId);
+          delete room.users[requestData.userId];
 
-
-      RoomModel.find({ _id: mongoose.Types.ObjectId(roomId) }).exec((err, messages) => {
-        //res.send(messages);
-        // console.log(`On connect Error:::${err} data:::`, messages);
-        // connection.sendUTF(`user login successfully ${messages}`);
-
-        if (messages && messages.length > 0) {
-          console.log(`Room Data Found....`, messages);
-
-
-          let dataToUpdate = messages[0];
-
-          dataToUpdate.userList = dataToUpdate.userList.filter(item => item != requestData.userId);
-          delete dataToUpdate.users[requestData.userId];
-
-
-          RoomModel.findOneAndUpdate({ _id: mongoose.Types.ObjectId(roomId) }, dataToUpdate, {
+          RoomModel.findOneAndUpdate({ _id: mongoose.Types.ObjectId(roomId) }, room, {
             new: false,
             useFindAndModify: false
           }, (err, updatedRoom) => {
-            console.log("updatedRoom:::", updatedRoom);
             if (err) {
               connection.sendUTF(responseError(500, "roomsModified", "Internal Server Error.", true));
             } else {
               connection.sendUTF(responseSuccess(200, "roomsModified", updatedRoom, "Data updated successfully.", true));
             }
-
           });
-
         } else {
           connection.sendUTF(responseError(404, "roomsDetails", "Not Found", true));
         }
       });
-
-
     }
   }
 }
+
+module.exports = { roomRequest };

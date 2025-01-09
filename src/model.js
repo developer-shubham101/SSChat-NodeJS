@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+const mongoose = require('mongoose');
 
 const UsersModel = mongoose.model('Users', {
 	userName: String,
@@ -45,7 +45,7 @@ const BlockModel = mongoose.model('Block', {
 	isBlock: Boolean
 });
 
-export {
+module.exports = {
 	UsersModel,
 	MessageModel,
 	RoomModel,
