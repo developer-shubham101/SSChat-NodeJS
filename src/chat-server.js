@@ -11,7 +11,7 @@ const mongoose = require('mongoose');
 const fs = require("fs");
 const multer = require('multer');
 const express = require('express');
-
+const path = require('path');
 // Import custom modules and configurations
 const config = require('./config');
 const { makeRandomString } = require('./utility');
@@ -51,11 +51,8 @@ const moveFile = (file) => {
 };
 
 // Define route for the home page
-app.get('/', (req, res) => {
-	// Sending This is the home page! in the page
-	res.send('This is the home page! in Express');
-});
-
+app.get('/', (req, res) => { res.sendFile(path.join(__dirname, '../html/index.html')); });
+app.get('/app.js', (req, res) => { res.sendFile(path.join(__dirname, '../html/app.js')); });
 /**
  * Handles file upload and moves the uploaded files to a new location.
  * @param {Object} req - The request object.
@@ -190,10 +187,12 @@ wsServer.on('request', function (request) {
 	}
 });
 
+console.log('MongoDB URL:', config.dbUrl);
+
 // Connect to MongoDB using Mongoose
 mongoose.connect(config.dbUrl, {
 	useNewUrlParser: true,
 	useUnifiedTopology: true,
 }, (error) => {
-	console.log({ message: 'MongoDB connected', error });
+	console.log({ message: 'MongoDB connection error', error });
 });
