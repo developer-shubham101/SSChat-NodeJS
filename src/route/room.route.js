@@ -183,26 +183,6 @@ async function roomRequest(requestData, connection) {
         group_details: requestData.room_type === "group" ? { group_name: "untitled group", ...requestData.group_details } : undefined
       };
 
-      /* let findObject = {};
-      userList.forEach((element) => {
-        findObject[`users.${element}`] = true;
-      });
-      if (requestData.room_type == "group") {
-        findObject["type"] = "group";
-        let groupDetails = Object.assign({}, {
-          group_name: "untitled group",
-        }, requestData.group_details);
-        findObject["group_details"] = groupDetails;
-        findObject["type"] = "group";
-      } else {
-        findObject["type"] = "individual";
-      }
-
-      findObject['last_message_time'] = new Date();
-      findObject['create_time'] = new Date();
-      findObject['userList'] = userList;
-      findObject['createBy'] = createBy; */
-
       if (userList.length === 2) {
         let existingRoom = await RoomModel.find({ userList: { $all: userList, $size: userList.length } });
 

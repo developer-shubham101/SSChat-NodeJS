@@ -8,6 +8,7 @@ services:
       - mongo
     environment:
       - MONGO_URL=mongodb://mongo:27017
+      - JWT_SECRET=c5e3e7636d890364934ec989490707419b32a6a6be74ca99cc1803b5315a8825
     volumes:
       - app-data:/app
 

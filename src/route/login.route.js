@@ -1,6 +1,6 @@
 
 const Validator = require('validatorjs');
-
+const mongoose = require('mongoose');
 const { UsersModel } = require('./../model');
 const { isFine, responseSuccess } = require('../utility');
  
@@ -28,7 +28,7 @@ async function loginRequest(requestData, connection) {
       };
       UsersModel.findOne(fondData, async (err, userData) => {
 
-        console.log('userData', userData);
+        console.log(`User data found: ${JSON.stringify(userData)}`);
 
         if (!userData) {
           connection.sendUTF(responseError(401, "login", "Unauthorized", true));
@@ -48,10 +48,7 @@ async function loginRequest(requestData, connection) {
           userData.is_online = true;
           userData.last_seen = new Date();
 
-          await userData.save();
-
-          //res.send(messages);
-          // console.log(`On connect Error:::${err} users:::`, userData);
+          await userData.save(); 
 
           console.log(`user login successfully`, userData);
           connection.sendUTF(responseSuccess(200, "login", userData, "Login Success", true));
@@ -66,17 +63,17 @@ async function loginRequest(requestData, connection) {
 
 
   } else if (requestData.type == 'loginOrCreate') {
-
     /*
-    * {
-  "request": "login",
-  "userId": "4",
-  "fcm_token": "qasdfghfds",
-  "password": "123456",
-  "type": "loginOrCreate",
-  "userName": "ali@yopmail.com"
-}
-* */
+     * Example request data:
+     * {
+     *   "request": "login",
+     *   "userId": "4",
+     *   "fcm_token": "qasdfghfds",
+     *   "password": "123456",
+     *   "type": "loginOrCreate",
+     *   "userName": "ali@yopmail.com"
+     * }
+     */
     let rules = {
       userId: 'required|integer|string',
       password: 'required|string',
@@ -115,7 +112,7 @@ async function loginRequest(requestData, connection) {
           fondData.last_seen = new Date();
           let user = new UsersModel(fondData);
           user.save().then((savedMessage) => {
-            // console.log(`User Saved.`, savedMessage);
+            console.log(`User Saved: ${JSON.stringify(savedMessage)}`);
             connection.sendUTF(responseSuccess(200, "loginOrCreate", savedMessage, "Success.", true));
           }).catch((ex) => {
             console.error(`User Failed to Saved.`, ex);
@@ -173,15 +170,13 @@ async function loginRequest(requestData, connection) {
           "is_online": true,
           "last_seen": new Date
         };
-        var user = new UsersModel(fondData);
+        let user = new UsersModel(fondData);
         user.save().then((savedMessage) => {
-          console.log(`User Saved.`, savedMessage);
+          console.log(`User Saved: ${JSON.stringify(savedMessage)}`);
 
           connection.sendUTF(responseSuccess(200, "register", savedMessage, "Success.", true));
         }).catch((ex) => {
-          console.error(`User Failed to Saved.`, ex);
-
-
+          console.error(`User Failed to Save: ${ex.message}`, ex); 
           connection.sendUTF(responseError(500, "register", "Internal Server Error.", true));
         });
 
@@ -190,9 +185,6 @@ async function loginRequest(requestData, connection) {
 
   } else if (requestData.type == 'updateProfile') {
 
-    /* if (!isFine(requestData._id)) {
-      connection.sendUTF(this.responseError(400, "updateProfile", "ObjectId is not provided.", true));
-    } else */
     if (!isFine(requestData.userId)) {
       connection.sendUTF(responseError(400, "updateProfile", "userId is required.", true));
     } else {
@@ -204,10 +196,6 @@ async function loginRequest(requestData, connection) {
       if (isFine(requestData.password)) {
         dataToUpdate['password'] = requestData.password;
       }
-
-      // if (isFine(requestData.userId)) {
-      // 	dataToUpdate['userId'] = requestData.userId;
-      // }
 
       if (isFine(requestData.firstName)) {
         dataToUpdate['firstName'] = requestData.firstName;
