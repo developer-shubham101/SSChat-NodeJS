@@ -7,6 +7,9 @@
   <title>Chat Application</title>
   <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
   <style>
+    .list-group-item{
+      cursor: pointer;
+    }
     .user-item {
       padding: 10px;
       border-bottom: 1px solid #ddd;
@@ -38,12 +41,43 @@
     #send-button {
       width: 18%;
     }
+
+    .bg-online {
+      background-color: #28a745;
+      color: #fff;
+    }
+
+    .bg-offline {
+      background-color: #dc3545;
+      color: #fff;
+    }
   </style>
 </head>
 
 <body>
   <div class="container">
     <h1 class="text-center my-4">Chat Application</h1>
+
+    <div id="update-form-profile-wrapper" class="row justify-content-center mb-4 d-none">
+      <h2>Profile Information</h2>
+      <form id="update-form-profile-form" class="w-100">
+        <div class="form-group">
+          <label for="update-form-first-name">First Name</label>
+          <input type="text" id="update-form-first-name" class="form-control" name="firstName"
+            placeholder="Enter your first name">
+        </div>
+        <div class="form-group">
+          <label for="update-form-last-name">Last Name</label>
+          <input type="text" id="update-form-last-name" class="form-control" name="lastName"
+            placeholder="Enter your last name">
+        </div>
+        <!-- <div class="form-group">
+          <label for="update-form-profile-pic">Profile Picture</label>
+          <input type="file" id="update-form-profile-pic" class="form-control-file" name="profile_pic">
+        </div> -->
+        <a  id="update-profile-button" class="btn btn-primary">Save Profile</a>
+      </form>
+    </div>
 
     <div id="login-form-wrapper" class="row justify-content-center">
       <h2>Login as</h2>
@@ -62,15 +96,24 @@
       </select>
     </div>
 
-    <div class="row">
-      <div id="user-list" class="col-md-6 list-group"></div>
-      <div id="room-list" class="col-md-6 list-group"></div>
+
+    <div class="row d-none" id="contact-list-wrapper">
+      <div class="col-md-6">
+        <h3>User List</h3>
+        <div id="user-list" class="list-group"></div>
+      </div>
+      <div class="col-md-6">
+        <h3>Room List</h3>
+        <div id="room-list" class="list-group"></div>
+      </div>
     </div>
 
-    <div id="messages" class="border rounded my-4 p-3 bg-light"></div>
-    <div class="input-group mb-3">
-      <input type="text" id="message-input" class="form-control" placeholder="Type your message here...">
-      <button id="send-button" class="btn btn-primary">Send</button>
+    <div id="chat-wrapper" class="d-none">
+      <div id="messages" class="border rounded my-4 p-3 bg-light"></div>
+      <div class="input-group mb-3">
+        <input type="text" id="message-input" class="form-control" placeholder="Type your message here...">
+        <button id="send-button" class="btn btn-primary">Send</button>
+      </div>
     </div>
   </div>
   <script src="app.js"></script>

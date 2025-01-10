@@ -321,3 +321,24 @@ Here is a document based on the details you provided:
   "message": "updated message"
 }
 ```
+
+#### User Status Change Notification
+
+**Notification:**
+```json
+{
+  "statusCode": 200,
+  "message": "Online/Offline Status Changed",
+  "data": {
+    "_id": "678009e966cb9a0d406888ac",
+    "userName": "bob@example.com",
+    "password": "password2",
+    "userId": 2,
+    "fcm_token": "zxcvbnm",
+    "is_online": true,
+    "last_seen": "2025-01-10T17:18:00.408Z",
+    "__v": 0
+  },
+  "type": "userModified"
+}
+```

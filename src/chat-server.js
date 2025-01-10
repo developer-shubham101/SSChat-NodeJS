@@ -15,8 +15,9 @@ const path = require('path');
 // Import custom modules and configurations
 const config = require('./config');
 const { makeRandomString } = require('./utility');
+const jwt = require('jsonwebtoken'); 
 
- 
+
 
 const { blockUser } = require('./route/block.route');
 const { responseError } = require('./utility');
@@ -27,10 +28,13 @@ const { allUser } = require('./route/users.route');
 const { updateOnlineStatus } = require('./update-user');
 const { currentLocation } = require('./route/current-location.route');
 const { removeConnectionFromList } = require('./connections');
+const { authenticateJWT } = require('./auth');
 
 
 // Initialize Express app and multer for file uploads
 const app = express();
+
+app.use(express.json());
 const upload = multer({ dest: 'uploads/', preservePath: false });
 
 /**
@@ -51,8 +55,30 @@ const moveFile = (file) => {
 };
 
 // Define route for the home page
-app.get('/', (req, res) => { res.sendFile(path.join(__dirname, '../html/index.html')); });
-app.get('/app.js', (req, res) => { res.sendFile(path.join(__dirname, '../html/app.js')); });
+app.get('/', (req, res) => {
+	res.sendFile(path.join(__dirname, '../html/index.html'));
+});
+app.get('/app.js', (req, res) => {
+	res.sendFile(path.join(__dirname, '../html/app.js'));
+});
+
+app.post('/token', (req, res) => {
+	console.log("Request body:", req.body);
+	
+	const { username, password } = req.body;
+
+	// Validate username and password (this is just an example, you should use a proper authentication mechanism)
+	if (username === 'admin' && password === 'password') {
+		const payload = { username };
+		const token = jwt.sign(payload, config.jwtSecret, { expiresIn: '2d' });
+
+		res.json({ token });
+	} else {
+		res.status(401).json({ message: 'Invalid username or password' });
+	}
+});
+
+
 /**
  * Handles file upload and moves the uploaded files to a new location.
  * @param {Object} req - The request object.
@@ -94,9 +120,6 @@ const wsServer = new webSocketServer({
 	// an enhanced HTTP request. For more info http://tools.ietf.org/html/rfc6455#page-6
 	httpServer: server
 });
-
-
-
 
 /**
  * Accepts a WebSocket request and sets up message and close event handlers.
@@ -177,7 +200,17 @@ const originIsAllowed = (request) => {
 // This callback function is called every time someone
 // tries to connect to the WebSocket server
 wsServer.on('request', function (request) {
+
 	console.log(`Connection from origin ${request.origin}. At ${new Date()}`);
+
+	const extractToken = request.resourceURL.path.split('token=');
+	const token = extractToken.length > 1 ? extractToken[1] : '';
+	const user = authenticateJWT(token);
+	if (!user) {
+		// ws.close(4001, 'Invalid or missing token');
+		request.reject();
+		return;
+	}
 
 	// Check if the origin is allowed
 	if (!originIsAllowed(request)) {
