@@ -7,9 +7,10 @@
   <title>Chat Application</title>
   <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
   <style>
-    .list-group-item{
+    .list-group-item {
       cursor: pointer;
     }
+
     .user-item {
       padding: 10px;
       border-bottom: 1px solid #ddd;
@@ -24,7 +25,12 @@
 
     #user-list {
       height: 200px;
-      width: 100%;
+      overflow-y: scroll;
+    }
+
+    #room-list {
+      height: 200px;
+      overflow-y: scroll;
     }
 
     #messages {
@@ -75,7 +81,7 @@
           <label for="update-form-profile-pic">Profile Picture</label>
           <input type="file" id="update-form-profile-pic" class="form-control-file" name="profile_pic">
         </div> -->
-        <a  id="update-profile-button" class="btn btn-primary">Save Profile</a>
+        <a id="update-profile-button" class="btn btn-primary">Save Profile</a>
       </form>
     </div>
 

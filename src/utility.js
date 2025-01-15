@@ -1,4 +1,6 @@
-const isFine = (item) => !(item === '' || item === 'undefined' || item === null);
+const _ = require('lodash');
+
+const isFine = (item) => !_.isEmpty(item);
 
 const formatTheMessages = (message) => {
   message = JSON.parse(JSON.stringify(message));

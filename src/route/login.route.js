@@ -3,10 +3,10 @@ const Validator = require('validatorjs');
 const mongoose = require('mongoose');
 const { UsersModel } = require('./../model');
 const { isFine, responseSuccess } = require('../utility');
- 
+
 const { updateOnlineStatus, sendMessageToAll } = require('../update-user');
-const { addConnectionToList  } = require('../connections');
- 
+const { addConnectionToList } = require('../connections');
+
 
 
 let loginUsers = {};
@@ -48,7 +48,7 @@ async function loginRequest(requestData, connection) {
           userData.is_online = true;
           userData.last_seen = new Date();
 
-          await userData.save(); 
+          await userData.save();
 
           console.log(`user login successfully`, userData);
           connection.sendUTF(responseSuccess(200, "login", userData, "Login Success", true));
@@ -94,46 +94,48 @@ async function loginRequest(requestData, connection) {
 
     } else {
 
-      let fondData = {
+      let userDataToFind = {
         "userName": requestData.userName,
         "password": requestData.password,
         "userId": requestData.userId,
       };
 
-      UsersModel.findOne(fondData, async (err, userData) => {
+      UsersModel.findOne(userDataToFind, async (err, foundUserData) => {
+        console.log("foundUserData", foundUserData);
+        
 
-        if (!userData) {
+        if (!foundUserData) {
 
-          isFine(requestData.fcm_token) && (fondData.fcm_token = requestData.fcm_token);
-          isFine(requestData.device_id) && (fondData.device_id = requestData.device_id);
-          isFine(requestData.firstName) && (fondData.firstName = requestData.firstName);
+          isFine(requestData.fcm_token) && (userDataToFind.fcm_token = requestData.fcm_token);
+          isFine(requestData.device_id) && (userDataToFind.device_id = requestData.device_id);
+          isFine(requestData.firstName) && (userDataToFind.firstName = requestData.firstName);
 
-          fondData.is_online = true;
-          fondData.last_seen = new Date();
-          let user = new UsersModel(fondData);
-          user.save().then((savedMessage) => {
-            console.log(`User Saved: ${JSON.stringify(savedMessage)}`);
-            connection.sendUTF(responseSuccess(200, "loginOrCreate", savedMessage, "Success.", true));
+          userDataToFind.is_online = true;
+          userDataToFind.last_seen = new Date();
+          let newUser = new UsersModel(userDataToFind);
+          newUser.save().then((savedUser) => {
+            console.log(`User Saved: ${JSON.stringify(savedUser)}`);
+            connection.sendUTF(responseSuccess(200, "loginOrCreate", savedUser, "Success.", true));
           }).catch((ex) => {
-            console.error(`User Failed to Saved.`, ex);
+            console.error(`User Failed to Save.`, ex);
             connection.sendUTF(responseError(500, "loginOrCreate", "Internal Server Error.", true));
           });
 
         } else {
 
-          let userId = userData['userId']; 
-          
+          let userId = foundUserData['userId'];
+
           addConnectionToList(connection, userId);
 
-          loginUsers[userId] = userData;
+          loginUsers[userId] = foundUserData;
+ 
+          if (isFine(requestData.firstName)) foundUserData.firstName = requestData.firstName;
+          if (isFine(requestData.fcm_token)) foundUserData.fcm_token = requestData.fcm_token;
+          if (isFine(requestData.device_id)) foundUserData.device_id = requestData.device_id; 
 
-          isFine(requestData.firstName) && (userData.firstName = requestData.firstName);
-          isFine(requestData.fcm_token) && (userData.fcm_token = requestData.fcm_token);
-          isFine(requestData.device_id) && (userData.device_id = requestData.device_id);
+          await foundUserData.save();
 
-          await userData.save();
-
-          connection.sendUTF(responseSuccess(200, "loginOrCreate", userData, "Login Success", true));
+          connection.sendUTF(responseSuccess(200, "loginOrCreate", foundUserData, "Login Success", true));
 
           updateOnlineStatus(userId, true);
         }
@@ -176,7 +178,7 @@ async function loginRequest(requestData, connection) {
 
           connection.sendUTF(responseSuccess(200, "register", savedMessage, "Success.", true));
         }).catch((ex) => {
-          console.error(`User Failed to Save: ${ex.message}`, ex); 
+          console.error(`User Failed to Save: ${ex.message}`, ex);
           connection.sendUTF(responseError(500, "register", "Internal Server Error.", true));
         });
 
@@ -189,13 +191,13 @@ async function loginRequest(requestData, connection) {
       connection.sendUTF(responseError(400, "updateProfile", "userId is required.", true));
     } else {
       let dataToUpdate = {};
-      if (isFine(requestData.userName)) {
+      /* if (isFine(requestData.userName)) {
         dataToUpdate['userName'] = requestData.userName;
       }
 
       if (isFine(requestData.password)) {
         dataToUpdate['password'] = requestData.password;
-      }
+      } */
 
       if (isFine(requestData.firstName)) {
         dataToUpdate['firstName'] = requestData.firstName;
@@ -221,7 +223,7 @@ async function loginRequest(requestData, connection) {
         dataToUpdate['device_id'] = requestData.device_id;
       }
 
-      UsersModel.findOneAndUpdate({ /* _id: requestData._id,  */
+      UsersModel.findOneAndUpdate({
         userId: requestData.userId
       }, dataToUpdate, { new: false, useFindAndModify: false }, (err, updated_user) => {
         if (err) {

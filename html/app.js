@@ -169,6 +169,9 @@ function handleLoginOrCreate(message) {
     document.getElementById('contact-list-wrapper').classList.remove('d-none');
     console.log('Login Success:', message.data);
 
+    document.getElementById('update-form-first-name').value = message.data.firstName;
+    document.getElementById('update-form-last-name').value = message.data.lastName;
+
     // Fetching list of users
     const usersRequest = {
       request: "users",
@@ -238,6 +241,8 @@ function handleAllUsers(message) {
 function handleCreateRoom(message) {
   if (message.statusCode === 200) {
     currentRoomId = message.data.newRoom._id;
+    const roomListDiv = document.getElementById('room-list');
+    addRoomToList(message.data, roomListDiv);
   }
 }
 
@@ -277,38 +282,42 @@ function handleAllRooms(message) {
     roomListDiv.innerHTML = ''; // Clear existing list
 
     message.data.roomList.forEach(room => {
-      console.log("room::: ", room);
-      const roomItem = document.createElement('div');
-      roomItem.classList.add('list-group-item', 'list-group-item-action');
-
-      if (room.type === "individual") {
-        const otherUser = room.userList.find(userId => userId !== loginRequest.userId);
-        const otherUserName = users.find(user => user.userId === otherUser)?.userName || 'Unknown User';
-        roomItem.textContent = `Chat with: ${otherUserName}`;
-      } else {
-        roomItem.textContent = `Room ID: ${room._id}`;
-      }
-      roomItem.innerHTML += `<br>Last Message: ${room.last_message || 'No messages yet'}`;
-      roomItem.innerHTML += `<br>Last Message Time: ${new Date(room.last_message_time).toLocaleString()}`;
-      roomItem.innerHTML += `<br>Created At: ${new Date(room.create_time).toLocaleString()}`;
-      roomItem.id = `room-item-${room._id}`;
-      roomItem.addEventListener('click', () => {
-        document.getElementById('chat-wrapper').classList.remove('d-none');
-        document.getElementById('messages').innerHTML = '';
-        console.log(`Room clicked: `, room);
-        currentRoomId = room._id;
-
-        const messageRequest = {
-          request: "message",
-          type: "allMessage",
-          room: room._id
-        };
-        console.log(`messageRequest: `, messageRequest);
-        socket.send(JSON.stringify(messageRequest));
-      });
-      roomListDiv.appendChild(roomItem);
+      addRoomToList(room, roomListDiv);
     });
   }
+}
+
+function addRoomToList(room, roomListDiv) {
+  console.log("room::: ", room);
+  const roomItem = document.createElement('div');
+  roomItem.classList.add('list-group-item', 'list-group-item-action');
+
+  if (room.type === "individual") {
+    const otherUser = room.userList.find(userId => userId != loginRequest.userId);
+    const otherUserName = users.find(user => user.userId == otherUser)?.userName || 'Unknown User';
+    roomItem.textContent = `Chat with: ${otherUserName}`;
+  } else {
+    roomItem.textContent = `Room ID: ${room._id}`;
+  }
+  roomItem.innerHTML += `<br>Last Message: ${room.last_message || 'No messages yet'}`;
+  roomItem.innerHTML += `<br>Last Message Time: ${new Date(room.last_message_time).toLocaleString()}`;
+  roomItem.innerHTML += `<br>Created At: ${new Date(room.create_time).toLocaleString()}`;
+  roomItem.id = `room-item-${room._id}`;
+  roomItem.addEventListener('click', () => {
+    document.getElementById('chat-wrapper').classList.remove('d-none');
+    document.getElementById('messages').innerHTML = '';
+    console.log(`Room clicked: `, room);
+    currentRoomId = room._id;
+
+    const messageRequest = {
+      request: "message",
+      type: "allMessage",
+      room: room._id
+    };
+    console.log(`messageRequest: `, messageRequest);
+    socket.send(JSON.stringify(messageRequest));
+  });
+  roomListDiv.appendChild(roomItem);
 }
 
 
