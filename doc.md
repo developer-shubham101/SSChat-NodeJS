@@ -6,7 +6,7 @@ Here is a document based on the details you provided:
 
 **WebSocket URL:** `ws://localhost:1337/V1`
 
-#### Login Request
+#### Login/Register Request
 
 **Request:**
 ```json
@@ -322,6 +322,22 @@ Here is a document based on the details you provided:
 }
 ```
 
+#### Update User Details
+
+**Request:**
+```json
+{
+  "request": "login",
+  "type": "updateProfile",
+  "firstName": "John",
+  "lastName": "Doe",
+  "profile_pic": "https://example.com/profile.jpg",
+  "email": "john.doe@example.com",
+  "fcm_token": "randomToken123",
+  "device_id": "deviceId456"
+}
+```
+
 #### User Status Change Notification
 
 **Notification:**
@@ -340,5 +356,29 @@ Here is a document based on the details you provided:
     "__v": 0
   },
   "type": "userModified"
+}
+```
+
+#### Block User
+
+**Request:**
+```json
+{
+  "request": "block_user",
+  "type": "blockUser",
+  "blockedBy": "3",
+  "blockedTo": "4",
+  "isBlock": true
+}
+```
+
+#### List of Blocked Users
+
+**Request:**
+```json
+{
+  "request": "block_user",
+  "type": "allBlockUser",
+  "user": "3"
 }
 ```

@@ -40,7 +40,6 @@ async function blockUser(requestData, connection) {
         "blockedBy": requestData.blockedBy,
         "blockedTo": requestData.blockedTo,
         "isBlock": requestData.isBlock,
-
       };
 
       BlockModel.updateOne({
@@ -60,7 +59,6 @@ async function blockUser(requestData, connection) {
               // Notify to all active user about that user status
               sendMessageToUser(requestData.blockedBy, responseSuccess(200, "blockUser", data[0], "Block Status Changed", true));
               sendMessageToUser(requestData.blockedTo, responseSuccess(200, "blockUser", data[0], "Block Status Changed", true));
-
             }
           });
         }
